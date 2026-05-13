@@ -213,3 +213,7 @@ data/*.db
 data/*.sqlite3
 data/*.pkl
 data/*.joblib
+
+# Editor backups
+*.save
+*.swp
