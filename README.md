@@ -1,4 +1,3 @@
-  GNU nano 8.4                          README.md *
 # Hameçon
 
 **AI-powered phishing-awareness training for under-served markets.**
