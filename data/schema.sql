@@ -1,30 +1,30 @@
--- Hameçon v1.0 - SQLite schema
+-- Hameçon v1.0 — SQLite schema
 -- All timestamps stored in UTC.
--- Foreign Keys are enforced by the init script (PRAGMA foreign_keys = ON).
+-- Foreign keys are enforced by the init script (PRAGMA foreign_keys = ON).
 
--- 1. roles - the two access levels
+-- 1. roles — the two access levels
 CREATE TABLE IF NOT EXISTS roles (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     name        TEXT NOT NULL UNIQUE,
     description TEXT
 );
 
--- 2. users - the operator of the platform (admins, viewers)
+-- 2. users — the operators of the platform (admins, viewers)
 CREATE TABLE IF NOT EXISTS users (
-     id                 INTEGER PRIMARY KEY AUTOINCREMENT,
-     username           TEXT NOT NULL UNIQUE,
-     email              TEXT NOT NULL UNIQUE,
-     password_hash      TEXT NOT NULL,
-     role_id            INTEGER NOT NULL,
-     is_active          INTEGER NOT NULL DEFAULT 1 CHECK(is_active IN (0,1)), 
-     failed_login_count INTEGER NOT NULL DEFAULT 0,
-     last_login_at      TIMESTAMP,
-     created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-     updated_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT  
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    username            TEXT NOT NULL UNIQUE,
+    email               TEXT NOT NULL UNIQUE,
+    password_hash       TEXT NOT NULL,
+    role_id             INTEGER NOT NULL,
+    is_active           INTEGER NOT NULL DEFAULT 1 CHECK(is_active IN (0,1)),
+    failed_login_count  INTEGER NOT NULL DEFAULT 0,
+    last_login_at       TIMESTAMP,
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE RESTRICT
 );
 
--- 3. recipients - the people who can receive simulated phishing 
+-- 3. recipients — the people who can receive simulated phishing
 CREATE TABLE IF NOT EXISTS recipients (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     full_name     TEXT NOT NULL,
@@ -36,21 +36,22 @@ CREATE TABLE IF NOT EXISTS recipients (
     created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
--- 4. consent_records - proof that a recipient consented to participate
+
+-- 4. consent_records — proof that a recipient consented to participate
 CREATE TABLE IF NOT EXISTS consent_records (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
     recipient_id     INTEGER NOT NULL,
-    granted_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-    granted_by_user  INTEGER NOT NULL, 
+    granted_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    granted_by_user  INTEGER NOT NULL,
     scope            TEXT NOT NULL,
     expires_at       TIMESTAMP,
     revoked_at       TIMESTAMP,
     evidence_note    TEXT,
-    FOREIGN KEY (recipient_id)    REFERENCES recipients(id) ON DELETE CASCADE, 
+    FOREIGN KEY (recipient_id)    REFERENCES recipients(id) ON DELETE CASCADE,
     FOREIGN KEY (granted_by_user) REFERENCES users(id)      ON DELETE RESTRICT
 );
 
--- 5. campaigns - one row per simulated phishing campaign
+-- 5. campaigns — one row per simulated phishing campaign
 CREATE TABLE IF NOT EXISTS campaigns (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     name            TEXT NOT NULL,
@@ -58,12 +59,12 @@ CREATE TABLE IF NOT EXISTS campaigns (
     language        TEXT NOT NULL CHECK(language IN ('fr','en','both')),
     difficulty      TEXT NOT NULL CHECK(difficulty IN ('easy','medium','hard')),
     scenario        TEXT NOT NULL CHECK(scenario IN ('mobile_money','banking','university')),
-    status	    TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','approved','sending','completed','cancelled')), 
+    status          TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','approved','sending','completed','cancelled')),
     created_by      INTEGER NOT NULL,
     approved_by     INTEGER,
     approved_at     TIMESTAMP,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    started_at      TIMESTAMP, 
+    started_at      TIMESTAMP,
     completed_at    TIMESTAMP,
     FOREIGN KEY (created_by)  REFERENCES users(id) ON DELETE RESTRICT,
     FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE RESTRICT
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS click_events (
     FOREIGN KEY (sent_email_id) REFERENCES sent_emails(id) ON DELETE CASCADE
 );
 
--- 8. submit_events - submission attempts on the fake landing form.
+-- 8. submit_events — submission attempts on the fake landing form.
 --    CRITICAL: input contents are NEVER stored. Only that a submit happened.
 CREATE TABLE IF NOT EXISTS submit_events (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -130,6 +131,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
+
 -- Indexes for the queries we will actually run
 CREATE INDEX IF NOT EXISTS idx_users_email             ON users(email);
 CREATE INDEX IF NOT EXISTS idx_recipients_email        ON recipients(email);
