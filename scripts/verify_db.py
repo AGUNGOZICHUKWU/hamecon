@@ -38,7 +38,7 @@ def main():
             print(f"  - {t}")
 
         missing = [t for t in EXPECTED_TABLES if t not in found]
-        extra = [t for t in found if t not in EXPECTED_TABLES]
+        extra = [t for t in found if t not in EXPECTED_TABLES and t != 'sqlite_sequence']
 
         print()
         if missing:
