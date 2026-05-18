@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Login - Hameçon{% endblock %}
+{% block content %}
+  <h1>Admin login</h1>
+  <form method="post">
+    <p><label>Username <input name="username" required></label></p>
+    <p><label>Password <input name="password" type="password" required></label></p>
+    <p><button type="submit">Log in</button></p>
+  </form>
+{% endblock %}

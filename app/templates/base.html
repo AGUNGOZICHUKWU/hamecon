@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Hameçon{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2em auto; padding: 0 1em; line-height: 1.5; }
+    header { border-bottom: 1px solid #ddd; padding-bottom: .5em; margin-bottom: 1em; }
+    .flash { padding: .5em 1em; background: #eef; border-left: 3px solid #66c; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<header><strong>Hameçon</strong> &mdash; phishing-awareness training</header>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</body>
+</html>
