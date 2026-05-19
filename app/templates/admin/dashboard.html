@@ -1,12 +1,34 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - Hameçon{% endblock %}
+{% block title %}Dashboard · Hameçon{% endblock %}
+
 {% block content %}
-  <h1>Admin dashboard</h1>
-  <p>Welcome. Real content arrives in Days 7-13.</p>
-  <ul>
-    <li>Campaigns (Day 8)</li>
-    <li>Recipients & consent (Day 7)</li>
-    <li>Reports (Day 13)</li>
-    <li>Audit log (Day 14)</li>
-  </ul>
+<div class="eyebrow">Admin · Overview</div>
+<h1>Welcome back</h1>
+<p class="muted">This is the operator dashboard. Real campaign tools come online over the next two weeks.</p>
+
+<div class="row" style="margin-top: 24px;">
+  <div class="card" style="flex: 1; min-width: 280px;">
+    <h2>Recipients & consent</h2>
+    <p class="muted">Add consenting volunteers and capture their written consent. Arriving Day 7.</p>
+    <a class="btn btn-ghost" href="#">Coming soon</a>
+  </div>
+  <div class="card" style="flex: 1; min-width: 280px;">
+    <h2>Campaigns</h2>
+    <p class="muted">Design, review, and dispatch AI-generated phishing scenarios. Arriving Day 8.</p>
+    <a class="btn btn-ghost" href="#">Coming soon</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card" style="flex: 1; min-width: 280px;">
+    <h2>Reports</h2>
+    <p class="muted">Per-campaign metrics and per-user vulnerability score. Arriving Day 13.</p>
+    <a class="btn btn-ghost" href="#">Coming soon</a>
+  </div>
+  <div class="card" style="flex: 1; min-width: 280px;">
+    <h2>Audit log</h2>
+    <p class="muted">Every operator action recorded with a timestamp. Arriving Day 14.</p>
+    <a class="btn btn-ghost" href="#">Coming soon</a>
+  </div>
+</div>
 {% endblock %}

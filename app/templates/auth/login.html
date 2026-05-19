@@ -1,10 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Login - Hameçon{% endblock %}
+{% block title %}Sign in · Hameçon{% endblock %}
+
 {% block content %}
-  <h1>Admin login</h1>
-  <form method="post">
-    <p><label>Username <input name="username" required></label></p>
-    <p><label>Password <input name="password" type="password" required></label></p>
-    <p><button type="submit">Log in</button></p>
+<div class="card card-narrow">
+  <div class="eyebrow">Admin access</div>
+  <h1>Sign in to Hameçon</h1>
+  <p class="muted">Only authorised operators can launch campaigns. All actions are audit-logged.</p>
+
+  <hr class="divider">
+
+  <form method="post" class="stack">
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+    </div>
+    <button class="btn" type="submit">Sign in</button>
   </form>
+</div>
 {% endblock %}
