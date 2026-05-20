@@ -24,10 +24,14 @@
         <span class="brand-tagline">phishing-awareness training</span>
       </a>
       <div class="nav-user">
-        {# Once auth is real (Day 6) we will show the logged-in username here. #}
-        <a href="{{ url_for('auth.login') }}">Admin</a>
-      </div>
-    </div>
+  {% if current_user.is_authenticated %}
+    Signed in as <strong>{{ current_user.username }}</strong> ({{ current_user.role_name }})
+    &nbsp;·&nbsp;
+    <a href="{{ url_for('auth.logout') }}">Sign out</a>
+  {% else %}
+    <a href="{{ url_for('auth.login') }}">Sign in</a>
+  {% endif %}
+</div>
   </nav>
 
   <main class="container">

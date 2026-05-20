@@ -10,13 +10,14 @@
   <hr class="divider">
 
   <form method="post" class="stack">
+    {{ form.hidden_tag() }}
     <div class="field">
-      <label for="username">Username</label>
-      <input id="username" name="username" type="text" required autofocus>
+      {{ form.username.label }}
+      {{ form.username(autofocus=True) }}
     </div>
     <div class="field">
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" required>
+      {{ form.password.label }}
+      {{ form.password() }}
     </div>
     <button class="btn" type="submit">Sign in</button>
   </form>
