@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Recipients · Hameçon{% endblock %}
+{% block content %}
+<div class="eyebrow">Admin</div>
+<h1>Recipients</h1>
+<p class="muted">People who have consented to receive simulated phishing.</p>
+
+<a class="btn btn-accent" href="{{ url_for('admin.recipients_new') }}">+ Add recipient</a>
+
+<div class="card" style="margin-top:24px;">
+  {% if not items %}
+    <p class="muted">No recipients yet. Add the first one to get started.</p>
+  {% else %}
+    <table style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--border);">
+          <th style="padding:8px 4px;">Name</th>
+          <th>Email</th>
+          <th>Language</th>
+          <th>Organisation</th>
+          <th>Consent</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in items %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 4px;">{{ r.full_name }}</td>
+          <td>{{ r.email }}</td>
+          <td>{{ r.language }}</td>
+          <td>{{ r.organisation or '—' }}</td>
+          <td>
+            {% if r.has_active_consent() %}
+              <span style="color:var(--success);">Active</span>
+            {% else %}
+              <span style="color:var(--danger);">Missing</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Add recipient · Hameçon{% endblock %}
+{% block content %}
+<div class="eyebrow">Admin · Recipients</div>
+<h1>Add a recipient</h1>
+<p class="muted">A recipient must give consent before being added. Hameçon refuses to send to anyone without an active consent record.</p>
+
+<div class="card" style="max-width: 640px;">
+<form method="post" class="stack">
+  <div class="field">
+    <label for="full_name">Full name</label>
+    <input id="full_name" name="full_name" required value="{{ data.full_name or '' }}">
+  </div>
+  <div class="field">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" required value="{{ data.email or '' }}">
+  </div>
+  <div class="field">
+    <label for="language">Preferred language</label>
+    <select id="language" name="language" required>
+      <option value="fr" {% if data.language=='fr' %}selected{% endif %}>French</option>
+      <option value="en" {% if data.language=='en' %}selected{% endif %}>English</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="organisation">Organisation (optional)</label>
+    <input id="organisation" name="organisation" value="{{ data.organisation or '' }}">
+  </div>
+  <div class="field">
+    <label for="notes">Notes (optional)</label>
+    <textarea id="notes" name="notes" rows="2">{{ data.notes or '' }}</textarea>
+  </div>
+
+  <hr class="divider">
+  <div class="eyebrow">Consent</div>
+
+  <div class="field">
+    <label for="scope">Consent scope</label>
+    <input id="scope" name="scope" value="general_phishing_training">
+  </div>
+  <div class="field">
+    <label for="evidence_note">Evidence of consent</label>
+    <textarea id="evidence_note" name="evidence_note" rows="2"
+              placeholder="e.g. Signed paper form on 2026-05-20"></textarea>
+  </div>
+  <label style="display:flex; gap:10px; align-items:center;">
+    <input type="checkbox" name="consent_given" value="1" required>
+    <span>I confirm this person has given informed consent to receive simulated phishing from Hameçon.</span>
+  </label>
+
+  <button class="btn" type="submit">Add recipient with consent</button>
+</form>
+</div>
+{% endblock %}
