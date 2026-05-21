@@ -15,7 +15,7 @@ DB_PATH = PROJECT_ROOT / "data" / "hamecon.db"
 
 EXPECTED_TABLES = [
     "roles", "users", "recipients", "consent_records", "campaigns",
-    "sent_emails", "click_events", "submit_events", "training_sessions",
+    "sent_messages", "click_events", "submit_events", "training_sessions",
     "audit_log",
 ]
 

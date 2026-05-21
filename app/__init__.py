@@ -29,7 +29,7 @@ def create_app() -> Flask:
     from app.auth.routes import auth_bp
     from app.admin.routes import admin_bp
     from app.admin import recipient_routes  # noqa - attaches Day 7 routes to admin_bp
-
+    from app.admin import campaign_routes  # noqa - attaches Day 8 routes to admin_bp
     # Registration comes AFTER every route is attached.
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(admin_bp, url_prefix="/admin")

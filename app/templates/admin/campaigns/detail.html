@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ camp.name }} · Hameçon{% endblock %}
+{% block content %}
+<div class="eyebrow">Admin · Campaign review</div>
+<h1>{{ camp.name }}</h1>
+<p class="muted">
+  {{ camp.channel }} · {{ camp.scenario }} · {{ camp.language }} ·
+  {{ camp.difficulty }} · status: <strong>{{ camp.status }}</strong>
+</p>
+
+<div class="card">
+  <div class="eyebrow">Brief given to the AI</div>
+  <p>{{ camp.brief }}</p>
+</div>
+
+<div class="card">
+  <div class="eyebrow">AI-generated draft</div>
+  {% if camp.draft_subject %}
+    <p><strong>Subject:</strong> {{ camp.draft_subject }}</p>
+  {% endif %}
+  <hr class="divider">
+  {% if camp.channel == 'email' %}
+    <div>{{ camp.draft_body | safe }}</div>
+  {% else %}
+    <p style="font-family:monospace; background:#f0f0ec; padding:12px; border-radius:6px;">{{ camp.draft_body }}</p>
+  {% endif %}
+</div>
+
+{% if camp.status == 'draft' %}
+<form method="post" action="{{ url_for('admin.campaigns_approve', campaign_id=camp.id) }}">
+  <button class="btn" type="submit">Approve this campaign</button>
+</form>
+{% else %}
+<p class="muted">This campaign is <strong>{{ camp.status }}</strong>. Sending arrives in Day 9.</p>
+{% endif %}
+
+<p style="margin-top:16px;"><a href="{{ url_for('admin.campaigns_list') }}">← Back to campaigns</a></p>
+{% endblock %}
