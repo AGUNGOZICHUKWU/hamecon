@@ -24,15 +24,15 @@ def create_app() -> Flask:
     def load_user(user_id):
         return User.get(int(user_id))
 
-    # Import the blueprints AND all their route files FIRST,
-    # so every route is attached before the blueprint is sealed.
     from app.auth.routes import auth_bp
     from app.admin.routes import admin_bp
-    from app.admin import recipient_routes  # noqa - attaches Day 7 routes to admin_bp
-    from app.admin import campaign_routes  # noqa - attaches Day 8 routes to admin_bp
-    # Registration comes AFTER every route is attached.
+    from app.track.routes import track_bp
+    from app.admin import recipient_routes  # noqa
+    from app.admin import campaign_routes   # noqa
+
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(track_bp)
 
     @app.route("/")
     def index():

