@@ -10,8 +10,10 @@ from app.auth.routes import _audit
 @admin_bp.route("/recipients")
 @login_required
 def recipients_list():
+    from app.learning.adaptive import recommend_difficulty
     items = Recipient.all()
-    return render_template("admin/recipients/list.html", items=items)
+    recs = {r.id: recommend_difficulty(r.id) for r in items}
+    return render_template("admin/recipients/list.html", items=items, recs=recs)
 
 
 @admin_bp.route("/recipients/new", methods=["GET", "POST"])
