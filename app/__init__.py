@@ -29,6 +29,7 @@ def create_app() -> Flask:
     from app.track.routes import track_bp
     from app.admin import recipient_routes  # noqa
     from app.admin import campaign_routes   # noqa
+    from app.admin import report_routes    # noqa - attaches Day 13 routes to admin_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(admin_bp, url_prefix="/admin")

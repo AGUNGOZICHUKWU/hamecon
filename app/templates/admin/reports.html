@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Reports · Hameçon{% endblock %}
+{% block content %}
+<div class="eyebrow">Admin · Reports</div>
+<h1>Campaign metrics</h1>
+<p class="muted">Engagement for every campaign. Click rate is the share of recipients who clicked the link.</p>
+
+<div class="card">
+  {% if not campaigns %}
+    <p class="muted">No campaigns yet.</p>
+  {% else %}
+    <table style="width:100%; border-collapse:collapse;">
+      <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
+        <th style="padding:8px 4px;">Campaign</th><th>Sent</th><th>Clicked</th>
+        <th>Submitted</th><th>Trained</th><th>Click rate</th>
+      </tr></thead>
+      <tbody>
+      {% for c in campaigns %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 4px;">{{ c.name }}</td>
+          <td>{{ c.sent }}</td><td>{{ c.clicked }}</td>
+          <td>{{ c.submitted }}</td><td>{{ c.trained }}</td>
+          <td><strong>{{ c.click_rate }}%</strong></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+
+<h2>Per-recipient vulnerability</h2>
+<p class="muted">Vulnerability score is the share of tests a person clicked. Higher means more at risk — and more in need of training.</p>
+
+<div class="card">
+  {% if not recipients %}
+    <p class="muted">No recipients yet.</p>
+  {% else %}
+    <table style="width:100%; border-collapse:collapse;">
+      <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
+        <th style="padding:8px 4px;">Recipient</th><th>Tests received</th>
+        <th>Clicked</th><th>Vulnerability</th>
+      </tr></thead>
+      <tbody>
+      {% for r in recipients %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 4px;">{{ r.name }}</td>
+          <td>{{ r.received }}</td><td>{{ r.clicked }}</td>
+          <td>
+            <strong style="color:{% if r.vulnerability >= 50 %}var(--danger){% else %}var(--success){% endif %};">
+              {{ r.vulnerability }}%
+            </strong>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}
