@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Audit log · Hameçon{% endblock %}
+{% block content %}
+<div class="eyebrow">Admin</div>
+<h1>Audit log</h1>
+<p class="muted">Every operator action is recorded here. Showing the 100 most recent of <strong>{{ total }}</strong> total entries.</p>
+
+<div class="card">
+  {% if not entries %}
+    <p class="muted">No entries yet.</p>
+  {% else %}
+    <table style="width:100%; border-collapse:collapse; font-size:.92rem;">
+      <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
+        <th style="padding:8px 4px;">Time (UTC)</th><th>User</th><th>Action</th>
+        <th>Target</th><th>Details</th><th>IP</th>
+      </tr></thead>
+      <tbody>
+      {% for e in entries %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 4px; font-family:monospace; font-size:.85rem;">{{ e.created_at }}</td>
+          <td>{{ e.username or 'anonymous' }}</td>
+          <td>
+            {% if 'fail' in e.action %}
+              <strong style="color:var(--danger);">{{ e.action }}</strong>
+            {% elif 'sent' in e.action or 'approved' in e.action %}
+              <strong style="color:var(--accent);">{{ e.action }}</strong>
+            {% else %}
+              {{ e.action }}
+            {% endif %}
+          </td>
+          <td>{{ e.target or '—' }}</td>
+          <td style="font-size:.85rem; color:var(--muted);">{{ e.details or '—' }}</td>
+          <td style="font-family:monospace; font-size:.85rem;">{{ e.ip_address or '—' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

@@ -28,7 +28,7 @@
   <div class="card" style="flex: 1; min-width: 280px;">
     <h2>Audit log</h2>
     <p class="muted">Every operator action recorded with a timestamp.</p>
-    <a class="btn btn-ghost" href="#">Arriving Day 14</a>
+    <a class="btn btn-ghost" href="{{ url_for('admin.audit_log_view') }}">Open</a>
   </div>
 </div>
 {% endblock %}
