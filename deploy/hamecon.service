@@ -1,0 +1,16 @@
+[Unit]
+Description=Hamecon Flask application
+After=network.target
+
+[Service]
+Type=simple
+User=pguser
+Group=pguser
+WorkingDirectory=/home/pguser/projects/hamecon
+EnvironmentFile=/home/pguser/projects/hamecon/.env
+ExecStart=/home/pguser/projects/hamecon/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 --access-logfile - --error-logfile - app:create_app()
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
