@@ -16,6 +16,9 @@ def create_app() -> Flask:
     app = Flask(__name__, template_folder="templates", static_folder="static")
     app.config["SECRET_KEY"] = os.environ["FLASK_SECRET_KEY"]
     app.config["WTF_CSRF_TIME_LIMIT"] = None
+    app.config["SESSION_COOKIE_SECURE"]   = True
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     login_manager.init_app(app)
 
