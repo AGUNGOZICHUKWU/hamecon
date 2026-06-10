@@ -10,6 +10,13 @@ from app.auth.routes import _audit
 from app.ai.generator import generate_phish_email, generate_phish_sms
 
 
+_DEFAULT_FROM_NAMES = {
+    "mobile_money": "MTN Mobile Money",
+    "banking":      "Afriland First Bank",
+    "university":   "Service Scolarité",
+}
+
+
 @admin_bp.route("/campaigns")
 @login_required
 def campaigns_list():
@@ -33,10 +40,15 @@ def campaigns_new():
             flash(f"AI generation failed: {e}", "error")
             return render_template("admin/campaigns/new.html", data=f)
 
+        from_name = f.get("from_name", "").strip()
+        if not from_name:
+            from_name = _DEFAULT_FROM_NAMES.get(f["scenario"], "Hamecon Training")
+
         camp = Campaign.create(
             name=f["name"].strip(), brief=brief, channel=channel,
             language=language, difficulty=difficulty, scenario=f["scenario"],
             draft_subject=subject, draft_body=body, created_by=current_user.id,
+            from_name=from_name,
         )
         _audit(current_user.id, "campaign_created", f"campaign_id={camp.id}")
         flash("Campaign drafted. Review the AI content below.", "success")

@@ -42,6 +42,13 @@
     </select>
   </div>
   <div class="field">
+    <label for="from_name">Sender display name (the company you are impersonating)</label>
+    <input id="from_name" name="from_name"
+           placeholder="e.g. MTN Mobile Money, Port Autonome de Douala, UBA Cameroun"
+           value="{{ data.from_name or '' }}">
+    <p class="muted" style="font-size:.85rem;">Leave blank to use the default for the chosen scenario.</p>
+  </div>
+  <div class="field">
     <label for="brief">Brief (one line for the AI)</label>
     <textarea id="brief" name="brief" rows="2" required
               placeholder="e.g. MTN MoMo deposit confirmation needed urgently">{{ data.brief or '' }}</textarea>

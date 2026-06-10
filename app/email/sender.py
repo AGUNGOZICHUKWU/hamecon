@@ -11,11 +11,11 @@ _ADDRESS      = os.environ["GMAIL_ADDRESS"]
 _APP_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]
 
 
-def send_email(to_address: str, subject: str, html_body: str):
-    """Send one HTML email. Raises on failure so the caller can count failures."""
+def send_email(to_address: str, subject: str, html_body: str, from_name: str = "Hamecon Training"):
+    """Send one HTML email. from_name shows in the recipient's inbox."""
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"]    = _ADDRESS
+    msg["From"]    = f"{from_name} <{_ADDRESS}>"
     msg["To"]      = to_address
     msg.attach(MIMEText(html_body, "html"))
     with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:

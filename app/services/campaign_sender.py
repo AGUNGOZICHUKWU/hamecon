@@ -7,6 +7,12 @@ from app.models.campaign import Campaign
 from app.models.sent_message import SentMessage
 from app.email.sender import send_email
 
+_SENDER_NAMES = {
+    "mobile_money": "MTN Mobile Money",
+    "banking":      "Afriland First Bank",
+    "university":   "Service Scolarité",
+}
+
 _TRACKING_BASE = os.environ.get("TRACKING_BASE_URL", "http://172.20.10.8:5000")
 
 
@@ -47,8 +53,8 @@ def send_campaign(campaign_id: int) -> dict:
             body += f'<p><a href="{tracking_url}">{tracking_url}</a></p>'
 
         try:
-            send_email(recipient.email, camp.draft_subject, body)
-            sent += 1
+            send_email(recipient.email, camp.draft_subject, body,
+                       from_name=camp.from_name or _SENDER_NAMES.get(camp.scenario, "Hamecon Training"))
         except Exception:
             failed += 1
 

@@ -17,6 +17,7 @@ class Campaign:
         self.draft_body    = row["draft_body"]
         self.created_by    = row["created_by"]
         self.created_at    = row["created_at"]
+        self.from_name     = row["from_name"] if "from_name" in row.keys() else None
 
     @classmethod
     def all(cls):
@@ -34,15 +35,15 @@ class Campaign:
 
     @classmethod
     def create(cls, name, brief, channel, language, difficulty, scenario,
-               draft_subject, draft_body, created_by):
+               draft_subject, draft_body, created_by, from_name=None):
         c = _conn()
         cur = c.execute(
             """INSERT INTO campaigns
                (name, brief, channel, language, difficulty, scenario,
-                draft_subject, draft_body, created_by)
-               VALUES (?,?,?,?,?,?,?,?,?)""",
+                draft_subject, draft_body, created_by, from_name)
+               VALUES (?,?,?,?,?,?,?,?,?,?)""",
             (name, brief, channel, language, difficulty, scenario,
-             draft_subject, draft_body, created_by),
+             draft_subject, draft_body, created_by, from_name),
         )
         cid = cur.lastrowid
         c.commit(); c.close()
