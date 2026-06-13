@@ -1,0 +1,7 @@
+[Service]
+Type=simple
+User=pguser
+Group=pguser
+ExecStart=/usr/local/bin/cloudflared tunnel --url https://localhost:443 --no-tls-verify --no-autoupdate --metrics 127.0.0.1:9051
+Restart=on-failure
+RestartSec=10
