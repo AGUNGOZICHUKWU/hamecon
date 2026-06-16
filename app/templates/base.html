@@ -5,37 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Hameçon{% endblock %}</title>
 
-  {# Google Fonts: Inter for body, IBM Plex Serif for headings.
-     They make the page look intentional, not auto-generated. #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&display=swap" rel="stylesheet">
 
-  {# Our stylesheet, served by Flask's static folder. #}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-  {# Top navigation. The "ç" gets the amber accent — small visual signature. #}
   <nav class="topbar">
     <div class="topbar-inner">
       <a href="{{ url_for('index') }}" class="brand">
         Hame<span class="hook">ç</span>on
         <span class="brand-tagline">phishing-awareness training</span>
       </a>
+
+      {% if current_user.is_authenticated %}
+      <div class="primary-nav">
+        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('admin.recipients_list') }}" class="{% if 'recipient' in (request.endpoint or '') %}active{% endif %}">Recipients</a>
+        <a href="{{ url_for('admin.campaigns_list') }}" class="{% if 'campaign' in (request.endpoint or '') %}active{% endif %}">Campaigns</a>
+        <a href="{{ url_for('admin.reports') }}" class="{% if request.endpoint == 'admin.reports' %}active{% endif %}">Reports</a>
+        <a href="{{ url_for('admin.audit_log_view') }}" class="{% if request.endpoint == 'admin.audit_log_view' %}active{% endif %}">Audit</a>
+      </div>
+      {% endif %}
+
       <div class="nav-user">
-  {% if current_user.is_authenticated %}
-    Signed in as <strong>{{ current_user.username }}</strong> ({{ current_user.role_name }})
-    &nbsp;·&nbsp;
-    <a href="{{ url_for('auth.logout') }}">Sign out</a>
-  {% else %}
-    <a href="{{ url_for('auth.login') }}">Sign in</a>
-  {% endif %}
-</div>
+        {% if current_user.is_authenticated %}
+          <strong>{{ current_user.username }}</strong>
+          <span class="role-badge">{{ current_user.role_name }}</span>
+          &nbsp;·&nbsp;
+          <a href="{{ url_for('auth.logout') }}">Sign out</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Sign in</a>
+        {% endif %}
+      </div>
+    </div>
   </nav>
 
   <main class="container">
-    {# Flash messages — categories include 'info', 'error', 'success' #}
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, msg in messages %}
         <div class="flash flash-{{ category }}">{{ msg }}</div>

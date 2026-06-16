@@ -193,3 +193,59 @@ a:hover { color: var(--accent); }
   .card-narrow { margin: 20px auto; }
   h1 { font-size: 1.6rem; }
 }
+
+/* === Primary navigation (added Day 17 UX pass) ============================ */
+.primary-nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-family: 'Inter', sans-serif;
+  font-size: .95rem;
+}
+
+.primary-nav a {
+  color: rgba(255,255,255,.78);
+  text-decoration: none;
+  padding: 6px 0;
+  font-weight: 500;
+  position: relative;
+  transition: color .15s;
+}
+
+.primary-nav a:hover {
+  color: #fff;
+}
+
+.primary-nav a.active {
+  color: var(--accent);
+}
+
+.primary-nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.role-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.85);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-left: 6px;
+}
+
+/* On narrow screens, collapse nav text size and tighten spacing */
+@media (max-width: 800px) {
+  .primary-nav { gap: 16px; font-size: .85rem; }
+  .brand-tagline { display: none; }
+  .role-badge { display: none; }
+}
