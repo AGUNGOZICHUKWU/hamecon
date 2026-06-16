@@ -8,6 +8,7 @@ from app.models.campaign import Campaign
 from app.models.user import _conn
 from app.auth.routes import _audit
 from app.ai.generator import generate_phish_email, generate_phish_sms
+from app.models.recipient import Recipient
 
 
 _DEFAULT_FROM_NAMES = {
@@ -117,3 +118,50 @@ def campaigns_messages(campaign_id):
         })
     return render_template("admin/campaigns/messages.html",
                            camp=Campaign.get(campaign_id), messages=messages)
+
+
+@admin_bp.route("/campaigns/<int:campaign_id>/select-recipients", methods=["GET", "POST"])
+@role_required("admin")
+def campaigns_select_recipients(campaign_id):
+    """Step between 'approve' and 'send': operator chooses who receives this campaign."""
+    camp = Campaign.get(campaign_id)
+    if not camp:
+        flash("Campaign not found.", "error")
+        return redirect(url_for("admin.campaigns_list"))
+    if camp.status != "approved":
+        flash(f"Campaign must be approved first. Current status: {camp.status}.", "error")
+        return redirect(url_for("admin.campaigns_detail", campaign_id=campaign_id))
+
+    if request.method == "POST":
+        # request.form.getlist returns ALL values for checkboxes named "recipient_ids"
+        selected_raw = request.form.getlist("recipient_ids")
+        selected_ids = [int(r) for r in selected_raw if r.isdigit()]
+
+        if not selected_ids:
+            flash("Please tick at least one recipient before sending.", "error")
+            return redirect(url_for("admin.campaigns_select_recipients", campaign_id=campaign_id))
+
+        # Dispatch using only the selected recipients
+        from app.services.campaign_sender import send_campaign
+        result = send_campaign(campaign_id, recipient_ids=selected_ids)
+        if "error" in result:
+            flash(result["error"], "error")
+            return redirect(url_for("admin.campaigns_detail", campaign_id=campaign_id))
+
+        _audit(current_user.id, "campaign_sent",
+               f"campaign_id={campaign_id} selected={len(selected_ids)} "
+               f"sent={result['sent']} "
+               f"skipped_no_consent={result['skipped_no_consent']} "
+               f"failed={result['failed']}")
+        flash(f"Campaign sent. Selected: {len(selected_ids)}. "
+              f"Delivered: {result['sent']}. "
+              f"Skipped (no consent): {result['skipped_no_consent']}. "
+              f"Failed: {result['failed']}.", "success")
+        return redirect(url_for("admin.campaigns_messages", campaign_id=campaign_id))
+
+    # GET: render the form
+    recipients = Recipient.all()
+    # Compute consent status here (we pass it to the template as a list of tuples)
+    items = [(r, r.has_active_consent()) for r in recipients]
+    return render_template("admin/campaigns/select_recipients.html",
+                           camp=camp, items=items)

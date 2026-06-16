@@ -31,11 +31,12 @@
   <button class="btn" type="submit">Approve this campaign</button>
 </form>
 {% elif camp.status == 'approved' %}
-<form method="post" action="{{ url_for('admin.campaigns_send', campaign_id=camp.id) }}">
-  <button class="btn btn-accent" type="submit">Send to all consenting recipients</button>
-</form>
-<p class="muted">Only recipients with an active consent record receive this. Others are skipped automatically.</p>
+<a class="btn btn-accent" href="{{ url_for('admin.campaigns_select_recipients', campaign_id=camp.id) }}">
+  Choose recipients and send
+</a>
+<p class="muted">You will pick which consenting recipients receive this specific campaign on the next page.</p>
 {% else %}
+
 <p class="muted">Status: <strong>{{ camp.status }}</strong>.
   <a href="{{ url_for('admin.campaigns_messages', campaign_id=camp.id) }}">View sent messages →</a>
 </p>

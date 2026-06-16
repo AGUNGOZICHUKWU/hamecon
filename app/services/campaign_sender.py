@@ -16,7 +16,7 @@ _SENDER_NAMES = {
 _TRACKING_BASE = os.environ.get("TRACKING_BASE_URL", "http://172.20.10.8:5000")
 
 
-def send_campaign(campaign_id: int) -> dict:
+def send_campaign(campaign_id: int, recipients_ids=None) -> dict:
     camp = Campaign.get(campaign_id)
     if not camp:
         return {"error": "Campaign not found."}
@@ -32,9 +32,17 @@ def send_campaign(campaign_id: int) -> dict:
 
     sent = 0
     skipped_no_consent = 0
+    skipped_not_selected = 0
     failed = 0
 
     for recipient in Recipient.all():
+        # ===== THE SELECTION GATE (new) =====
+        # If specific IDs were requested, skip everyone else.
+        if recipient_ids is not None and recipient.id not in recipient_ids:
+            skipped_not_selected += 1
+            continue
+        # ============================
+
         # ===== THE CONSENT GATE =====
         if not recipient.has_active_consent():
             skipped_no_consent += 1
@@ -63,4 +71,7 @@ def send_campaign(campaign_id: int) -> dict:
               (campaign_id,))
     c.commit(); c.close()
 
-    return {"sent": sent, "skipped_no_consent": skipped_no_consent, "failed": failed}
+    return {"sent": sent,
+            "skipped_no_consent": skipped_no_consent,
+            "skipped_not_selected": skipped_not_selected,
+            "failed": failed}

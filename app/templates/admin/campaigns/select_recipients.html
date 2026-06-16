@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Choose recipients · Hameçon{% endblock %}
+
+{% block content %}
+<div class="eyebrow">Admin · Campaigns · Recipient selection</div>
+<h1>Choose recipients for "{{ camp.name }}"</h1>
+<p class="muted">
+  Tick only the recipients who should receive this specific campaign. Recipients
+  without active consent are shown for transparency but cannot be selected.
+</p>
+
+<form method="post" class="stack">
+  <div class="card">
+    <div style="display:flex; gap:16px; margin-bottom: 16px;">
+      <a href="#" id="select-all">Select all eligible</a>
+      <a href="#" id="select-none">Select none</a>
+    </div>
+
+    {% if not items %}
+      <p class="muted">No recipients exist yet. Add some via the Recipients page first.</p>
+    {% else %}
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left; border-bottom:1px solid var(--border);">
+            <th style="padding:8px 4px; width:40px;"></th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Language</th>
+            <th>Consent</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for recipient, has_consent in items %}
+          <tr style="border-bottom:1px solid var(--border); {% if not has_consent %}opacity:.45;{% endif %}">
+            <td style="padding:10px 4px;">
+              {% if has_consent %}
+                <input type="checkbox" name="recipient_ids" value="{{ recipient.id }}" class="r-cb">
+              {% else %}
+                <input type="checkbox" disabled title="No active consent">
+              {% endif %}
+            </td>
+            <td>{{ recipient.full_name }}</td>
+            <td>{{ recipient.email }}</td>
+            <td>{{ recipient.language }}</td>
+            <td>
+              {% if has_consent %}
+                <span style="color:var(--success);">Active</span>
+              {% else %}
+                <span style="color:var(--danger);">Missing</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+  <div style="margin-top: 24px;">
+    <button class="btn btn-accent" type="submit">Send to selected recipients</button>
+    <a href="{{ url_for('admin.campaigns_detail', campaign_id=camp.id) }}"
+       style="margin-left: 16px;">Cancel</a>
+  </div>
+</form>
+
+<script>
+  document.getElementById('select-all').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.r-cb').forEach(function(cb){ cb.checked = true; });
+  });
+  document.getElementById('select-none').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.r-cb').forEach(function(cb){ cb.checked = false; });
+  });
+</script>
+{% endblock %}
