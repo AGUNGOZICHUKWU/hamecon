@@ -2,33 +2,140 @@
 {% block title %}Dashboard · Hameçon{% endblock %}
 
 {% block content %}
-<div class="eyebrow">Admin · Overview</div>
-<h1>Welcome back</h1>
-<p class="muted">This is the operator dashboard.</p>
 
-<div class="row" style="margin-top: 24px;">
-  <div class="card" style="flex: 1; min-width: 280px;">
-    <h2>Recipients &amp; consent</h2>
-    <p class="muted">Add consenting volunteers and capture their consent.</p>
-    <a class="btn btn-ghost" href="{{ url_for('admin.recipients_list') }}">Open</a>
+<span class="eyebrow">Overview</span>
+<h1>Welcome back{% if current_user.is_authenticated %}, {{ current_user.username }}{% endif %}</h1>
+<p class="muted">Your awareness-training programme at a glance.</p>
+
+{# ---------- Ethics / compliance banner ---------- #}
+<div class="compliance">
+  <span class="shield">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l7 2.8v5c0 4.4-3 7.6-7 8.8-4-1.2-7-4.4-7-8.8V6l7-2.8z"/><path d="M9 12l2 2 4-4"/></svg>
+  </span>
+  <div class="c-text">
+    <strong>Ethics &amp; compliance active</strong>
+    <span>This platform only operates within an explicit, recorded-consent framework.</span>
   </div>
-  <div class="card" style="flex: 1; min-width: 280px;">
-    <h2>Campaigns</h2>
-    <p class="muted">Design, review, and dispatch AI-generated phishing scenarios.</p>
-    <a class="btn btn-ghost" href="{{ url_for('admin.campaigns_list') }}">Open</a>
+  <div class="c-tags">
+    <span class="c-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Consent-first</span>
+    <span class="c-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Audit-logged</span>
+    <span class="c-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> No credentials stored</span>
   </div>
 </div>
 
-<div class="row">
-  <div class="card" style="flex: 1; min-width: 280px;">
-    <h2>Reports</h2>
-    <p class="muted">Per-campaign metrics and per-user vulnerability score.</p>
-    <a class="btn btn-ghost" href="{{ url_for('admin.reports') }}">Open</a>
+{# ---------- Key metrics ---------- #}
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 11 14"/><path d="M21.5 3.5l-6.7 17.5-3.8-7.9L3.1 9.3 21.5 3.5z"/></svg></div>
+      <span class="badge badge-neutral">{{ stats.active|default(0) }} active</span>
+    </div>
+    <div class="kpi-value">{{ stats.campaigns|default(0) }}</div>
+    <div class="kpi-label">Campaigns</div>
+    <div class="kpi-sub">Simulations designed &amp; dispatched</div>
   </div>
-  <div class="card" style="flex: 1; min-width: 280px;">
-    <h2>Audit log</h2>
-    <p class="muted">Every operator action recorded with a timestamp.</p>
-    <a class="btn btn-ghost" href="{{ url_for('admin.audit_log_view') }}">Open</a>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3 3 0 0 1 0 5.8"/><path d="M18.8 19.5a4.6 4.6 0 0 0-2.6-4.1"/></svg></div>
+      <span class="badge badge-success"><span class="dot"></span>Consented</span>
+    </div>
+    <div class="kpi-value">{{ stats.recipients|default(0) }}</div>
+    <div class="kpi-label">Recipients</div>
+    <div class="kpi-sub">Volunteers with active consent</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5V5M12 19v3.5M1.5 12H5M19 12h3.5"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ stats.click_rate|default(0) }}<span class="unit">%</span></div>
+    <div class="kpi-label">Overall click rate</div>
+    <div class="kpi-sub">{{ stats.clicked|default(0) }} of {{ stats.sent|default(0) }} messages clicked</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.3 20.5h19.4L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.6h.01"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ stats.high_risk|default(0) }}</div>
+    <div class="kpi-label">High-risk users</div>
+    <div class="kpi-sub">Clicked ≥ 50% of tests — priority for training</div>
   </div>
 </div>
+
+{# ---------- Methodology / workflow ---------- #}
+<div class="section-head"><h2>How a campaign works</h2></div>
+<div class="card">
+  <div class="workflow">
+    <div class="wf-step key"><div class="wf-num">1</div><div class="wf-title">Consent</div><div class="wf-desc">Capture recorded, revocable consent</div></div>
+    <div class="wf-step accent"><div class="wf-num">2</div><div class="wf-title">Design</div><div class="wf-desc">AI drafts the email or SMS lure</div></div>
+    <div class="wf-step"><div class="wf-num">3</div><div class="wf-title">Review</div><div class="wf-desc">Operator approves the content</div></div>
+    <div class="wf-step"><div class="wf-num">4</div><div class="wf-title">Send</div><div class="wf-desc">Dispatch to selected recipients</div></div>
+    <div class="wf-step"><div class="wf-num">5</div><div class="wf-title">Track</div><div class="wf-desc">Measure clicks &amp; submissions</div></div>
+    <div class="wf-step key"><div class="wf-num">6</div><div class="wf-title">Train</div><div class="wf-desc">Deliver a teachable moment</div></div>
+  </div>
+</div>
+
+{# ---------- Quick actions ---------- #}
+<div class="section-head"><h2>Quick actions</h2></div>
+<div class="tiles">
+  <a class="tile" href="{{ url_for('admin.recipients_list') }}">
+    <div class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3 3 0 0 1 0 5.8"/><path d="M18.8 19.5a4.6 4.6 0 0 0-2.6-4.1"/></svg></div>
+    <h3>Recipients &amp; consent</h3>
+    <p>Add consenting volunteers and manage their consent records.</p>
+    <span class="go">Manage recipients <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+  </a>
+
+  <a class="tile" href="{{ url_for('admin.campaigns_list') }}">
+    <div class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 11 14"/><path d="M21.5 3.5l-6.7 17.5-3.8-7.9L3.1 9.3 21.5 3.5z"/></svg></div>
+    <h3>Campaigns</h3>
+    <p>Design, review and dispatch AI-generated phishing scenarios.</p>
+    <span class="go">Open campaigns <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+  </a>
+
+  <a class="tile" href="{{ url_for('admin.reports') }}">
+    <div class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V5"/><path d="M16 20v-6"/><path d="M3 20.5h18"/></svg></div>
+    <h3>Reports &amp; analytics</h3>
+    <p>Per-campaign engagement and per-user vulnerability scores.</p>
+    <span class="go">View reports <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+  </a>
+
+  <a class="tile" href="{{ url_for('admin.audit_log_view') }}">
+    <div class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l7 2.8v5c0 4.4-3 7.6-7 8.8-4-1.2-7-4.4-7-8.8V6l7-2.8z"/><path d="M9 12l2 2 4-4"/></svg></div>
+    <h3>Audit log</h3>
+    <p>Every operator action, timestamped and fully traceable.</p>
+    <span class="go">Open audit log <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
+  </a>
+</div>
+
+{# ---------- Top campaigns (shown only when stats are wired up) ---------- #}
+{% if top_campaigns %}
+<div class="section-head"><h2>Top campaigns by click rate</h2></div>
+<div class="card card-flush" style="padding: 18px;">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th>Campaign</th><th class="num">Sent</th><th class="num">Clicked</th><th style="width: 200px;">Click rate</th>
+      </tr></thead>
+      <tbody>
+      {% for c in top_campaigns %}
+        <tr>
+          <td class="primary-cell">{{ c.name }}<span class="sub">{{ c.channel|capitalize }} · {{ c.scenario }}</span></td>
+          <td class="num">{{ c.sent }}</td>
+          <td class="num">{{ c.clicked }}</td>
+          <td>
+            <div class="meter">
+              <div class="meter-track"><div class="meter-fill {% if c.click_rate >= 50 %}danger{% elif c.click_rate >= 25 %}warn{% endif %}" style="width: {{ c.click_rate }}%;"></div></div>
+              <span class="meter-val">{{ c.click_rate }}%</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

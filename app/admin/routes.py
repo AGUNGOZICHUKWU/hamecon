@@ -23,4 +23,20 @@ def role_required(role_name):
 @admin_bp.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("admin/dashboard.html")
+    from app.services.reports import campaign_metrics, recipient_metrics
+    camps = campaign_metrics()
+    recs = recipient_metrics()
+    total_sent = sum(c["sent"] for c in camps)
+    total_clicked = sum(c["clicked"] for c in camps)
+    stats = {
+        "campaigns": len(camps),
+        "recipients": len(recs),
+        "sent": total_sent,
+        "clicked": total_clicked,
+        "trained": sum(c["trained"] for c in camps),
+        "click_rate": round(100 * total_clicked / total_sent, 1) if total_sent else 0.0,
+        "high_risk": sum(1 for r in recs if r["vulnerability"] >= 50),
+        "active": sum(1 for c in camps if c["status"] in ("approved", "sent")),
+    }
+    top = sorted(camps, key=lambda c: c["click_rate"], reverse=True)[:5]
+    return render_template("admin/dashboard.html", stats=stats, top_campaigns=top)

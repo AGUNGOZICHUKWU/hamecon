@@ -7,56 +7,83 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body class="app">
 
-  <nav class="topbar">
-    <div class="topbar-inner">
-      <a href="{{ url_for('index') }}" class="brand">
-        Hame<span class="hook">ç</span>on
-        <span class="brand-tagline">phishing-awareness training</span>
+  {# ===================== SIDEBAR ===================== #}
+  <aside class="sidebar">
+    <a class="sidebar-brand"
+       href="{{ url_for('admin.dashboard') if current_user.is_authenticated else url_for('index') }}">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Hameçon" style="height: 40px; width: auto;">
+    </a>
+
+    {% if current_user.is_authenticated %}
+    <div class="sidebar-section">Menu</div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
+        <span class="lbl">Dashboard</span>
       </a>
+      <a href="{{ url_for('admin.recipients_list') }}" class="{% if 'recipient' in (request.endpoint or '') %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3 3 0 0 1 0 5.8"/><path d="M18.8 19.5a4.6 4.6 0 0 0-2.6-4.1"/></svg>
+        <span class="lbl">Recipients</span>
+      </a>
+      <a href="{{ url_for('admin.campaigns_list') }}" class="{% if 'campaign' in (request.endpoint or '') %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 11 14"/><path d="M21.5 3.5l-6.7 17.5-3.8-7.9L3.1 9.3 21.5 3.5z"/></svg>
+        <span class="lbl">Campaigns</span>
+      </a>
+      <a href="{{ url_for('admin.reports') }}" class="{% if request.endpoint == 'admin.reports' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V5"/><path d="M16 20v-6"/><path d="M3 20.5h18"/></svg>
+        <span class="lbl">Reports</span>
+      </a>
+      <a href="{{ url_for('admin.audit_log_view') }}" class="{% if request.endpoint == 'admin.audit_log_view' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2l7 2.8v5c0 4.4-3 7.6-7 8.8-4-1.2-7-4.4-7-8.8V6l7-2.8z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span class="lbl">Audit log</span>
+      </a>
+    </nav>
 
-      {% if current_user.is_authenticated %}
-      <div class="primary-nav">
-        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Dashboard</a>
-        <a href="{{ url_for('admin.recipients_list') }}" class="{% if 'recipient' in (request.endpoint or '') %}active{% endif %}">Recipients</a>
-        <a href="{{ url_for('admin.campaigns_list') }}" class="{% if 'campaign' in (request.endpoint or '') %}active{% endif %}">Campaigns</a>
-        <a href="{{ url_for('admin.reports') }}" class="{% if request.endpoint == 'admin.reports' %}active{% endif %}">Reports</a>
-        <a href="{{ url_for('admin.audit_log_view') }}" class="{% if request.endpoint == 'admin.audit_log_view' %}active{% endif %}">Audit</a>
-      </div>
-      {% endif %}
-
-      <div class="nav-user">
-        {% if current_user.is_authenticated %}
+    <div class="sidebar-foot">
+      <div class="account">
+        <span class="avatar">{{ current_user.username[:2]|upper }}</span>
+        <span class="who">
           <strong>{{ current_user.username }}</strong>
-          <span class="role-badge">{{ current_user.role_name }}</span>
-          &nbsp;·&nbsp;
-          <a href="{{ url_for('auth.logout') }}">Sign out</a>
-        {% else %}
-          <a href="{{ url_for('auth.login') }}">Sign in</a>
-        {% endif %}
+          <span>{{ current_user.role_name }}</span>
+        </span>
       </div>
     </div>
-  </nav>
+    {% endif %}
+  </aside>
 
-  <main class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, msg in messages %}
-        <div class="flash flash-{{ category }}">{{ msg }}</div>
-      {% endfor %}
-    {% endwith %}
+  {# ===================== MAIN ===================== #}
+  <div class="app-body">
+    {% if current_user.is_authenticated %}
+    <header class="app-topbar">
+      <div class="topbar-crumb"><span class="live"></span> Operator console</div>
+      <div class="topbar-right">
+        <span class="role-badge">{{ current_user.role_name }}</span>
+        <a class="btn btn-ghost btn-sm" href="{{ url_for('auth.logout') }}">Sign out</a>
+      </div>
+    </header>
+    {% endif %}
 
-    {% block content %}{% endblock %}
-  </main>
+    <main class="app-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
 
-  <footer class="footer">
-    <div>Hameçon v1.0 — built for under-served markets</div>
-    <div>Consent-first · audit-logged · open source</div>
-  </footer>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-foot">
+      <div>Hameçon v1.0 — phishing-awareness training for under-served markets</div>
+      <div>Consent-first · Audit-logged · Open source</div>
+    </footer>
+  </div>
 
 </body>
 </html>

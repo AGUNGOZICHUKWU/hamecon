@@ -1,59 +1,146 @@
 {% extends "base.html" %}
 {% block title %}Reports · Hameçon{% endblock %}
-{% block content %}
-<div class="eyebrow">Admin · Reports</div>
-<h1>Campaign metrics</h1>
-<p class="muted">Engagement for every campaign. Click rate is the share of recipients who clicked the link.</p>
 
-<div class="card">
+{% block content %}
+
+{# ---------- In-template aggregates (no route change required) ---------- #}
+{% set total_sent    = campaigns | sum(attribute='sent') %}
+{% set total_clicked = campaigns | sum(attribute='clicked') %}
+{% set total_trained = campaigns | sum(attribute='trained') %}
+{% set overall_rate  = ((100 * total_clicked / total_sent) | round(1)) if total_sent else 0 %}
+{% set high_risk     = recipients | selectattr('vulnerability', 'ge', 50) | list | length %}
+
+<span class="eyebrow">Analytics</span>
+<h1>Reports &amp; insights</h1>
+<p class="muted">Engagement across every simulation, with per-recipient risk scoring to target follow-up training.</p>
+
+{# ---------- Key insights ---------- #}
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 11 14"/><path d="M21.5 3.5l-6.7 17.5-3.8-7.9L3.1 9.3 21.5 3.5z"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ campaigns | length }}</div>
+    <div class="kpi-label">Campaigns run</div>
+    <div class="kpi-sub">{{ total_sent }} messages dispatched</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5V5M12 19v3.5M1.5 12H5M19 12h3.5"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ overall_rate }}<span class="unit">%</span></div>
+    <div class="kpi-label">Overall click rate</div>
+    <div class="kpi-sub">{{ total_clicked }} of {{ total_sent }} messages clicked</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ total_trained }}</div>
+    <div class="kpi-label">Teachable moments</div>
+    <div class="kpi-sub">Recipients who completed training</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi-top">
+      <div class="kpi-chip red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.3 20.5h19.4L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.6h.01"/></svg></div>
+    </div>
+    <div class="kpi-value">{{ high_risk }}</div>
+    <div class="kpi-label">High-risk users</div>
+    <div class="kpi-sub">Clicked ≥ 50% of tests — priority for training</div>
+  </div>
+</div>
+
+{# ---------- Campaign engagement ---------- #}
+<div class="section-head">
+  <h2>Campaign engagement</h2>
+  <span class="muted">Click rate is the share of recipients who opened the lure link.</span>
+</div>
+<div class="card card-flush" style="padding: 18px;">
   {% if not campaigns %}
-    <p class="muted">No campaigns yet.</p>
+    <p class="muted" style="margin: 8px;">No campaigns yet. Once a campaign is sent, its engagement appears here.</p>
   {% else %}
-    <table style="width:100%; border-collapse:collapse;">
-      <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
-        <th style="padding:8px 4px;">Campaign</th><th>Sent</th><th>Clicked</th>
-        <th>Submitted</th><th>Trained</th><th>Click rate</th>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th>Campaign</th>
+        <th>Status</th>
+        <th class="num">Sent</th>
+        <th class="num">Clicked</th>
+        <th class="num">Submitted</th>
+        <th class="num">Trained</th>
+        <th style="width: 190px;">Click rate</th>
       </tr></thead>
       <tbody>
       {% for c in campaigns %}
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:10px 4px;">{{ c.name }}</td>
-          <td>{{ c.sent }}</td><td>{{ c.clicked }}</td>
-          <td>{{ c.submitted }}</td><td>{{ c.trained }}</td>
-          <td><strong>{{ c.click_rate }}%</strong></td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% endif %}
-</div>
-
-<h2>Per-recipient vulnerability</h2>
-<p class="muted">Vulnerability score is the share of tests a person clicked. Higher means more at risk — and more in need of training.</p>
-
-<div class="card">
-  {% if not recipients %}
-    <p class="muted">No recipients yet.</p>
-  {% else %}
-    <table style="width:100%; border-collapse:collapse;">
-      <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
-        <th style="padding:8px 4px;">Recipient</th><th>Tests received</th>
-        <th>Clicked</th><th>Vulnerability</th>
-      </tr></thead>
-      <tbody>
-      {% for r in recipients %}
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:10px 4px;">{{ r.name }}</td>
-          <td>{{ r.received }}</td><td>{{ r.clicked }}</td>
+        <tr>
+          <td class="primary-cell">{{ c.name }}<span class="sub">{{ c.channel|capitalize }} · {{ c.scenario }} · {{ c.difficulty }}</span></td>
           <td>
-            <strong style="color:{% if r.vulnerability >= 50 %}var(--danger){% else %}var(--success){% endif %};">
-              {{ r.vulnerability }}%
-            </strong>
+            {% if c.status == 'sent' %}
+              <span class="badge badge-success"><span class="dot"></span>Sent</span>
+            {% elif c.status == 'approved' %}
+              <span class="badge badge-primary">Approved</span>
+            {% elif c.status == 'draft' %}
+              <span class="badge badge-neutral">Draft</span>
+            {% else %}
+              <span class="badge badge-neutral">{{ c.status|capitalize }}</span>
+            {% endif %}
+          </td>
+          <td class="num">{{ c.sent }}</td>
+          <td class="num">{{ c.clicked }}</td>
+          <td class="num">{{ c.submitted }}</td>
+          <td class="num">{{ c.trained }}</td>
+          <td>
+            <div class="meter">
+              <div class="meter-track"><div class="meter-fill {% if c.click_rate >= 50 %}danger{% elif c.click_rate >= 25 %}warn{% endif %}" style="width: {{ c.click_rate }}%;"></div></div>
+              <span class="meter-val">{{ c.click_rate }}%</span>
+            </div>
           </td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
+  </div>
   {% endif %}
 </div>
+
+{# ---------- Per-recipient vulnerability ---------- #}
+<div class="section-head">
+  <h2>Per-recipient vulnerability</h2>
+  <span class="muted">Higher score = clicked more often = more in need of coaching.</span>
+</div>
+<div class="card card-flush" style="padding: 18px;">
+  {% if not recipients %}
+    <p class="muted" style="margin: 8px;">No recipients yet.</p>
+  {% else %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr>
+        <th>Recipient</th>
+        <th class="num">Tests received</th>
+        <th class="num">Clicked</th>
+        <th style="width: 220px;">Vulnerability</th>
+      </tr></thead>
+      <tbody>
+      {% for r in recipients %}
+        <tr>
+          <td class="primary-cell">{{ r.name }}<span class="sub">{{ r.email }}</span></td>
+          <td class="num">{{ r.received }}</td>
+          <td class="num">{{ r.clicked }}</td>
+          <td>
+            <div class="meter">
+              <div class="meter-track"><div class="meter-fill {% if r.vulnerability >= 50 %}danger{% elif r.vulnerability >= 25 %}warn{% endif %}" style="width: {{ r.vulnerability }}%;"></div></div>
+              <span class="meter-val">{{ r.vulnerability }}%</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}
