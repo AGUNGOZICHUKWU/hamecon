@@ -14,26 +14,48 @@ _client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 _MODEL = "claude-sonnet-4-5"
 
 _CAMEROON_CONTEXT = """
-CAMEROONIAN CONTEXT — REAL PATTERNS TO MIMIC
+CAMEROONIAN PHISHING THREAT LANDSCAPE — REALISTIC PATTERNS TO MIMIC
 
-Real MTN MoMo SMS shape (anonymised, normal transaction):
-  "Vous avez recu 10000 FCFA de [NAME] (677123456). Solde: 12500. ID: PP123ABC. *126#"
+LANGUAGE & REGISTER:
+- 90% of phishing in Cameroon arrives in French; some in English (NW/SW regions); often code-switches.
+- Casual tone (no excessive "vous"), urgent imperative verbs, generic greeting ("Cher client"/"Madame/Monsieur").
+- Mobile money texts feel rushed and abbreviated: "URGENT", "MAINTENANT", "AVANT 18H".
 
-Real Orange Money SMS shape:
-  "Transfert de 5000 FCFA recu de 690000000. Frais: 0. Solde: 8500."
+REAL MTN MoMo TRANSACTION SHAPE (anonymised):
+  "Vous avez recu 10.000 FCFA de [NOM] (677123456). Solde: 12.500 FCFA. ID: PP123ABC. *126# pour confirmer."
 
-Real bank email shape (Afriland, BICEC, SGC): formal French, never urgent,
-never asks for password by email, signs with full bank contact block.
+REAL ORANGE MONEY SHAPE:
+  "Transfert de 5.000 FCFA recu de 690000000. Frais: 0 FCFA. Solde: 8.500 FCFA. Tapez *144# pour gerer."
 
-Real scam patterns observed in Cameroon 2024-2026:
-- Fake MoMo deposit alert with "click to confirm" link
-- Fake Orange Money cash-out reversal asking for PIN
-- Fake university (Yaounde I, Buea, Douala) grades portal password reset
-- Fake bank virtual-card activation
-- Fake job offer asking for ID copy + small "registration fee"
+REAL BANK EMAIL SHAPE (Afriland, BICEC, SGC, UBA, Ecobank):
+- Formal French with "Cher(e) client(e)" or "Madame, Monsieur".
+- Always signs with a contact block: Direction, address, phone, website (the legitimate one).
+- Never asks for password BY EMAIL. (Phish emails will ask anyway — that is the trick.)
 
-Speak in the register of the channel: SMS is short, casual, French/English mix,
-no greeting. Email is more formal.
+REAL SCAM PATTERNS OBSERVED IN CAMEROON 2024-2026:
+- "Notification d'arrivee conteneur PADC-CM-XXXXXX au Port Autonome de Douala" — shipping scam.
+- "Confirmation paiement MoMo de XX.XXX FCFA" with a click-to-confirm link that leads nowhere.
+- "Alerte transaction UBA" with phone number "677..." to call.
+- "Bourse universitaire — confirmer votre dossier" from a fake Yaoundé I email.
+- "Votre commande Jumia/Glovo est prete" — package delivery requiring "frais d'expedition".
+- "Eneo coupure programmee" — power utility maintenance phishing.
+
+URGENCY TRIGGERS COMMONLY USED:
+- "avant 24 heures" / "avant minuit"
+- "votre compte sera suspendu"
+- "derniere chance"
+- "valider maintenant"
+- "MTN appelle a confirmer" (impersonating telecom outreach)
+
+BRAND VOICE PER SCENARIO:
+- mobile_money: short, transactional, FCFA amounts, USSD codes (*126#, *144#).
+- banking: formal, complete sentences, signed by a fake "service client".
+- university: bureaucratic, mentions document numbers, deadline of 48h.
+
+PHONE NUMBER FORMAT (Cameroonian mobile):
+- 6XX XXX XXX with MTN starting 67X/68X, Orange starting 69X/65X.
+
+CURRENCY: Always FCFA (never Euros or USD). Realistic amounts: 1.000 to 250.000 FCFA range.
 """
 
 _DIFFICULTY_RULES = {

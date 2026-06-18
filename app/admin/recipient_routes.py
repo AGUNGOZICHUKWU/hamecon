@@ -44,3 +44,34 @@ def recipients_new():
         return redirect(url_for("admin.recipients_list"))
 
     return render_template("admin/recipients/new.html", data={})
+
+
+@admin_bp.route("/recipients/<int:recipient_id>/revoke", methods=["POST"])
+@role_required("admin")
+def recipients_revoke(recipient_id):
+    r = Recipient.get(recipient_id)
+    if not r:
+        flash("Recipient not found.", "error")
+        return redirect(url_for("admin.recipients_list"))
+    ConsentRecord.revoke(recipient_id)
+    _audit(current_user.id, "consent_revoked", f"recipient_id={recipient_id} email={r.email}")
+    flash(f"Consent revoked for {r.full_name}. They will no longer receive campaigns.", "success")
+    return redirect(url_for("admin.recipients_list"))
+
+
+@admin_bp.route("/recipients/<int:recipient_id>/grant", methods=["POST"])
+@role_required("admin")
+def recipients_grant(recipient_id):
+    r = Recipient.get(recipient_id)
+    if not r:
+        flash("Recipient not found.", "error")
+        return redirect(url_for("admin.recipients_list"))
+    ConsentRecord.grant(
+        recipient_id=recipient_id,
+        granted_by_user=current_user.id,
+        scope="general_phishing_training",
+        evidence_note="Re-granted by admin during ongoing training programme",
+    )
+    _audit(current_user.id, "consent_granted", f"recipient_id={recipient_id} email={r.email}")
+    flash(f"Consent re-granted for {r.full_name}. They can now receive campaigns.", "success")
+    return redirect(url_for("admin.recipients_list"))

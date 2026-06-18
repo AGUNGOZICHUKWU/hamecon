@@ -1,29 +1,82 @@
 <!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Moment d'apprentissage</title>
-  <style>
-    body { font-family: Georgia, serif; background:#f7f7f4; margin:0;
-           color:#1a1a1a; line-height:1.6; }
-    .wrap { max-width:620px; margin:50px auto; background:#fff; padding:36px;
-            border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,.08);
-            border-top:5px solid #d97706; }
-    h1 { color:#0d3b4f; font-size:1.6rem; }
-    .lesson { white-space:pre-wrap; font-family:Arial,sans-serif; }
-    .badge { display:inline-block; background:#fef3e2; color:#b45309;
-             padding:4px 12px; border-radius:20px; font-size:.8rem;
-             font-family:Arial,sans-serif; font-weight:bold; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <span class="badge">EXERCICE DE FORMATION · TRAINING EXERCISE</span>
-    <h1>This was a safe training test</h1>
-    <p>Nothing was stolen. No password was saved. This was a simulated phishing
-       message sent as part of a consented awareness exercise. Here is what to learn:</p>
-    <div class="lesson">{{ lesson }}</div>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment d'apprentissage — Hameçon</title>
+<style>
+  body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background:#f9f9f7; color:#222; line-height:1.6;}
+  .wrap { max-width:720px; margin:32px auto; padding:0 20px;}
+  .banner { background:#d97706; color:#fff; padding:20px 24px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:14px;}
+  .banner .icon { font-size:2rem;}
+  .card { background:#fff; padding:32px; border-radius:0 0 8px 8px; box-shadow:0 4px 20px rgba(0,0,0,.06);}
+  h1 { color:#0d3b4f; margin-top:0;}
+  h2 { color:#0d3b4f; border-bottom:2px solid #d97706; padding-bottom:6px; margin-top:32px;}
+  .lessons { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top:16px;}
+  .lesson-card { background:#fafaf7; padding:20px; border-radius:6px; border-left:4px solid #d97706;}
+  .lesson-card .num { display:inline-block; background:#0d3b4f; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:bold; margin-bottom:8px;}
+  .ai-lesson { white-space:pre-wrap; background:#f4f4f0; padding:20px; border-radius:6px; font-size:.95rem;}
+  .reassure { background:#d4edda; color:#155724; padding:14px 18px; border-radius:6px; margin-bottom:16px;}
+  .checklist { background:#fffbeb; padding:18px 24px; border-radius:6px; margin-top:20px;}
+  .checklist li { margin:8px 0;}
+</style></head><body>
+<div class="wrap">
+
+  <div class="banner">
+    <div class="icon">⚠</div>
+    <div>
+      <strong>EXERCICE DE FORMATION</strong> · TRAINING EXERCISE<br>
+      <small style="opacity:.9;">Vous venez de cliquer sur un faux message de phishing — c'etait un test.</small>
+    </div>
   </div>
-</body>
-</html>
+
+  <div class="card">
+
+    <div class="reassure">
+      <strong>✓ Rien n'a ete vole.</strong> Aucun mot de passe n'a ete enregistre.
+      Ce message faisait partie d'un programme de formation auquel vous avez consenti.
+    </div>
+
+    <h1>Ce qui vient de se passer</h1>
+    <p>Vous avez recu un message qui semblait reel mais qui etait une <strong>simulation de phishing</strong>.
+       Le but : vous aider a reconnaitre les vrais pieges avant qu'ils ne vous coutent quelque chose.</p>
+
+    <h2>Pourquoi ce message vous a piege</h2>
+    <div class="ai-lesson">{{ lesson }}</div>
+
+    <h2>3 reflexes a developper</h2>
+    <div class="lessons">
+      <div class="lesson-card">
+        <span class="num">1</span>
+        <strong>Verifiez l'expediteur</strong>
+        <p style="font-size:.9rem; margin-bottom:0;">MTN, Orange et les banques n'envoient jamais d'emails demandant votre PIN ou mot de passe.</p>
+      </div>
+      <div class="lesson-card">
+        <span class="num">2</span>
+        <strong>Mefiez-vous de l'urgence</strong>
+        <p style="font-size:.9rem; margin-bottom:0;">"Avant 24h", "compte suspendu", "derniere chance" — ce sont des signaux de manipulation.</p>
+      </div>
+      <div class="lesson-card">
+        <span class="num">3</span>
+        <strong>Tapez le code USSD vous-meme</strong>
+        <p style="font-size:.9rem; margin-bottom:0;">*126# pour MTN, *144# pour Orange. Jamais via un lien recu par message.</p>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <strong>Liste de verification rapide avant de cliquer :</strong>
+      <ul>
+        <li>L'adresse email correspond-elle au vrai domaine de l'entreprise ?</li>
+        <li>Le message contient-il une faute ou un ton inhabituel ?</li>
+        <li>Vous demande-t-on votre PIN, mot de passe ou code de securite ?</li>
+        <li>Le lien commence-t-il par le vrai site officiel ?</li>
+      </ul>
+    </div>
+
+    <p style="margin-top:24px; color:#666; font-size:.9rem;">
+      Si quelque chose vous semble suspect, n'agissez pas immediatement.
+      Verifiez en composant directement le numero officiel du service client.
+    </p>
+
+  </div>
+
+</div>
+</body></html>

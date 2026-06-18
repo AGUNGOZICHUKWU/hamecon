@@ -16,7 +16,14 @@ _SENDER_NAMES = {
 _TRACKING_BASE = os.environ.get("TRACKING_BASE_URL", "http://172.20.10.8:5000")
 
 
-def send_campaign(campaign_id: int, recipients_ids=None) -> dict:
+def send_campaign(campaign_id: int, recipient_ids=None) -> dict:
+    """
+    Send an approved campaign.
+
+    recipient_ids: optional list of ints. If provided, only those recipients
+                   receive the campaign. If None (default), send to all
+                   consenting recipients.
+    """
     camp = Campaign.get(campaign_id)
     if not camp:
         return {"error": "Campaign not found."}
@@ -36,8 +43,7 @@ def send_campaign(campaign_id: int, recipients_ids=None) -> dict:
     failed = 0
 
     for recipient in Recipient.all():
-        # ===== THE SELECTION GATE (new) =====
-        # If specific IDs were requested, skip everyone else.
+        # ===== THE SELECTION GATE =====
         if recipient_ids is not None and recipient.id not in recipient_ids:
             skipped_not_selected += 1
             continue
@@ -63,6 +69,7 @@ def send_campaign(campaign_id: int, recipients_ids=None) -> dict:
         try:
             send_email(recipient.email, camp.draft_subject, body,
                        from_name=camp.from_name or _SENDER_NAMES.get(camp.scenario, "Hamecon Training"))
+            sent += 1
         except Exception:
             failed += 1
 

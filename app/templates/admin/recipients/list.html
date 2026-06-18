@@ -15,7 +15,8 @@
       <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
         <th style="padding:8px 4px;">Name</th><th>Email</th><th>Language</th>
         <th>Consent</th><th>Next test</th>
-      </tr></thead>
+        <th>Actions</th>
+      </tr></thead>  
       <tbody>
       {% for r in items %}
         <tr style="border-bottom:1px solid var(--border);">
@@ -32,6 +33,20 @@
           <td title="{{ recs[r.id].reason }}">
             <strong>{{ recs[r.id].difficulty }}</strong>
           </td>
+          <td>
+  {% if r.has_active_consent() %}
+    <form method="post" action="{{ url_for('admin.recipients_revoke', recipient_id=r.id) }}" style="display:inline;">
+      <button type="submit" class="btn btn-ghost"
+              onclick="return confirm('Revoke consent for {{ r.full_name }}? They will not receive future campaigns until you grant again.')">
+        Revoke
+      </button>
+    </form>
+  {% else %}
+    <form method="post" action="{{ url_for('admin.recipients_grant', recipient_id=r.id) }}" style="display:inline;">
+      <button type="submit" class="btn btn-accent">Grant consent</button>
+    </form>
+  {% endif %}
+</td>
         </tr>
       {% endfor %}
       </tbody>

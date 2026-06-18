@@ -66,3 +66,16 @@ class ConsentRecord:
             (recipient_id, granted_by_user, scope, evidence_note, expires_at),
         )
         c.commit(); c.close()
+    
+    @staticmethod
+    def revoke(recipient_id):
+        """Mark the active consent record as revoked."""
+        c = _conn()
+        c.execute(
+            """UPDATE consent_records
+               SET revoked_at = CURRENT_TIMESTAMP
+               WHERE recipient_id = ?
+                 AND revoked_at IS NULL""",
+            (recipient_id,),
+        )
+        c.commit(); c.close()
