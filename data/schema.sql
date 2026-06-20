@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
     status        TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','approved','sending','completed','cancelled')),
     draft_subject TEXT,
     draft_body    TEXT,
+    from_name     TEXT,
     created_by    INTEGER NOT NULL,
     approved_by   INTEGER,
     approved_at   TIMESTAMP,
