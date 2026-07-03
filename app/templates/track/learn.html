@@ -1,82 +1,396 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8">
+<html lang="fr">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Moment d'apprentissage — Hameçon</title>
 <style>
-  body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background:#f9f9f7; color:#222; line-height:1.6;}
-  .wrap { max-width:720px; margin:32px auto; padding:0 20px;}
-  .banner { background:#d97706; color:#fff; padding:20px 24px; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:14px;}
-  .banner .icon { font-size:2rem;}
-  .card { background:#fff; padding:32px; border-radius:0 0 8px 8px; box-shadow:0 4px 20px rgba(0,0,0,.06);}
-  h1 { color:#0d3b4f; margin-top:0;}
-  h2 { color:#0d3b4f; border-bottom:2px solid #d97706; padding-bottom:6px; margin-top:32px;}
-  .lessons { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top:16px;}
-  .lesson-card { background:#fafaf7; padding:20px; border-radius:6px; border-left:4px solid #d97706;}
-  .lesson-card .num { display:inline-block; background:#0d3b4f; color:#fff; width:28px; height:28px; border-radius:50%; text-align:center; line-height:28px; font-weight:bold; margin-bottom:8px;}
-  .ai-lesson { white-space:pre-wrap; background:#f4f4f0; padding:20px; border-radius:6px; font-size:.95rem;}
-  .reassure { background:#d4edda; color:#155724; padding:14px 18px; border-radius:6px; margin-bottom:16px;}
-  .checklist { background:#fffbeb; padding:18px 24px; border-radius:6px; margin-top:20px;}
-  .checklist li { margin:8px 0;}
-</style></head><body>
-<div class="wrap">
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f0;
+    color: #1a1a1a;
+    line-height: 1.5;
+    font-size: 16px;
+  }
+  .page { max-width: 700px; margin: 0 auto; padding: 0 0 48px; }
+
+  /* ── BANNER ── */
+  .banner {
+    background: #d97706;
+    color: #fff;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .banner .icon { font-size: 1.6rem; flex-shrink: 0; }
+  .banner strong { display: block; font-size: 1rem; letter-spacing: .03em; }
+  .banner small { opacity: .9; font-size: .82rem; }
+
+  /* ── CARD WRAPPER ── */
+  .card {
+    background: #fff;
+    margin: 0 12px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    padding: 28px 24px 32px;
+  }
+  @media (max-width: 480px) {
+    .card { margin: 0; border-radius: 0; padding: 20px 16px 28px; }
+  }
+
+  /* ── REASSURE ── */
+  .reassure {
+    background: #dcfce7;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .reassure .icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+  .reassure-text strong { display: block; color: #15803d; font-size: 1.05rem; margin-bottom: 3px; }
+  .reassure-text span { color: #166534; font-size: .92rem; }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 28px 0 14px;
+    color: #0d3b4f;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .section-title .dot {
+    width: 8px; height: 8px;
+    background: #d97706;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── WHAT HAPPENED BOX ── */
+  .what-happened {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-size: .95rem;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+  }
+  .what-happened .brand-pill {
+    display: inline-block;
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: .85rem;
+    margin: 0 2px;
+    vertical-align: middle;
+  }
+
+  /* ── RED FLAGS ── */
+  .flags-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 4px;
+  }
+  @media (max-width: 520px) {
+    .flags-grid { grid-template-columns: 1fr; }
+  }
+  .flag-card {
+    background: #fff5f5;
+    border: 1.5px solid #fca5a5;
+    border-radius: 10px;
+    padding: 16px 14px;
+  }
+  .flag-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: #dc2626;
+    color: #fff;
+    font-weight: 800;
+    font-size: .85rem;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+  .flag-card strong {
+    display: block;
+    color: #7f1d1d;
+    font-size: .9rem;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .flag-card p {
+    margin: 0;
+    font-size: .83rem;
+    color: #555;
+    line-height: 1.45;
+  }
+
+  /* ── TIP ── */
+  .tip-box {
+    background: #fffbeb;
+    border-left: 4px solid #d97706;
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .tip-box .tip-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .tip-box p { margin: 0; font-size: .95rem; color: #78350f; font-weight: 600; line-height: 1.5; }
+
+  /* ── VERIFY BOX ── */
+  .verify-box {
+    background: #0d3b4f;
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-top: 4px;
+  }
+  .verify-box .vb-title {
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .verify-box .vb-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: .88rem;
+    line-height: 1.4;
+    opacity: .92;
+  }
+  .verify-box .vb-rule .vb-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+  .verify-box .vb-brand {
+    display: inline-block;
+    background: #d97706;
+    color: #fff;
+    font-weight: 700;
+    padding: 1px 10px;
+    border-radius: 20px;
+    font-size: .82rem;
+  }
+  .verify-box a { color: #fcd34d; text-decoration: none; font-weight: 600; }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    text-align: center;
+    color: #94a3b8;
+    font-size: .78rem;
+    margin-top: 28px;
+    padding: 0 16px;
+  }
+
+  /* ── LEGACY FALLBACK ── */
+  .legacy-lesson {
+    white-space: pre-wrap;
+    background: #f4f4f0;
+    padding: 20px;
+    border-radius: 8px;
+    font-size: .9rem;
+    color: #333;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page">
 
   <div class="banner">
     <div class="icon">⚠</div>
     <div>
-      <strong>EXERCICE DE FORMATION</strong> · TRAINING EXERCISE<br>
-      <small style="opacity:.9;">Vous venez de cliquer sur un faux message de phishing — c'etait un test.</small>
+      <strong>EXERCICE DE FORMATION · TRAINING EXERCISE</strong>
+      <small>Vous venez de cliquer sur un faux message — c'était un test.</small>
     </div>
   </div>
 
   <div class="card">
 
+    {# ── REASSURANCE ── #}
     <div class="reassure">
-      <strong>✓ Rien n'a ete vole.</strong> Aucun mot de passe n'a ete enregistre.
-      Ce message faisait partie d'un programme de formation auquel vous avez consenti.
-    </div>
-
-    <h1>Ce qui vient de se passer</h1>
-    <p>Vous avez recu un message qui semblait reel mais qui etait une <strong>simulation de phishing</strong>.
-       Le but : vous aider a reconnaitre les vrais pieges avant qu'ils ne vous coutent quelque chose.</p>
-
-    <h2>Pourquoi ce message vous a piege</h2>
-    <div class="ai-lesson">{{ lesson }}</div>
-
-    <h2>3 reflexes a developper</h2>
-    <div class="lessons">
-      <div class="lesson-card">
-        <span class="num">1</span>
-        <strong>Verifiez l'expediteur</strong>
-        <p style="font-size:.9rem; margin-bottom:0;">MTN, Orange et les banques n'envoient jamais d'emails demandant votre PIN ou mot de passe.</p>
-      </div>
-      <div class="lesson-card">
-        <span class="num">2</span>
-        <strong>Mefiez-vous de l'urgence</strong>
-        <p style="font-size:.9rem; margin-bottom:0;">"Avant 24h", "compte suspendu", "derniere chance" — ce sont des signaux de manipulation.</p>
-      </div>
-      <div class="lesson-card">
-        <span class="num">3</span>
-        <strong>Tapez le code USSD vous-meme</strong>
-        <p style="font-size:.9rem; margin-bottom:0;">*126# pour MTN, *144# pour Orange. Jamais via un lien recu par message.</p>
+      <div class="icon">✅</div>
+      <div class="reassure-text">
+        <strong>Rien n'a été volé.</strong>
+        <span>Votre compte est en sécurité. Ce message faisait partie d'un programme de formation auquel vous avez consenti.</span>
       </div>
     </div>
 
-    <div class="checklist">
-      <strong>Liste de verification rapide avant de cliquer :</strong>
-      <ul>
-        <li>L'adresse email correspond-elle au vrai domaine de l'entreprise ?</li>
-        <li>Le message contient-il une faute ou un ton inhabituel ?</li>
-        <li>Vous demande-t-on votre PIN, mot de passe ou code de securite ?</li>
-        <li>Le lien commence-t-il par le vrai site officiel ?</li>
-      </ul>
-    </div>
+    {% if lesson_data %}
 
-    <p style="margin-top:24px; color:#666; font-size:.9rem;">
-      Si quelque chose vous semble suspect, n'agissez pas immediatement.
-      Verifiez en composant directement le numero officiel du service client.
-    </p>
+      {# ── WHAT HAPPENED ── #}
+      <div class="section-title"><div class="dot"></div>Ce qui vient de se passer</div>
+      <div class="what-happened">
+        {% if lesson_data.brand %}
+          Des escrocs envoient de faux messages au nom de
+          <span class="brand-pill">{{ lesson_data.brand }}</span>
+          pour vous faire paniquer et cliquer sans réfléchir.
+          Ce type d'arnaque s'appelle le <strong>phishing</strong> — comme un pêcheur
+          qui lance un appât pour attraper vos informations.
+        {% else %}
+          Des escrocs envoient de faux messages d'organisations connues pour vous faire
+          paniquer et cliquer sans réfléchir. C'est ce qu'on appelle le <strong>phishing</strong>.
+        {% endif %}
+      </div>
+
+      {# ── RED FLAGS ── #}
+      <div class="section-title"><div class="dot"></div>3 signaux d'alarme dans ce message</div>
+      <div class="flags-grid">
+        {% for flag in lesson_data.red_flags[:3] %}
+        <div class="flag-card">
+          <div class="flag-num">{{ loop.index }}</div>
+          <strong>{{ flag.title }}</strong>
+          <p>{{ flag.detail }}</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      {# ── TIP ── #}
+      <div class="section-title"><div class="dot"></div>La règle d'or</div>
+      <div class="tip-box">
+        <div class="tip-icon">💡</div>
+        <p>{{ lesson_data.tip }}</p>
+      </div>
+
+      {# ── VERIFY via official channel ── #}
+      {% set brand_l = (lesson_data.brand or from_name or '') | lower %}
+      <div class="section-title"><div class="dot"></div>En cas de doute — vérifiez directement</div>
+      <div class="verify-box">
+        <div class="vb-title">
+          📞
+          {% if 'afriland' in brand_l %}
+            Afriland First Bank
+          {% elif 'mtn' in brand_l %}
+            MTN Mobile Money
+          {% elif 'orange' in brand_l %}
+            Orange Money
+          {% elif 'uba' in brand_l %}
+            UBA Cameroun
+          {% elif 'bicec' in brand_l %}
+            BICEC
+          {% elif 'ecobank' in brand_l %}
+            Ecobank Cameroun
+          {% elif 'société générale' in brand_l or 'sgc' in brand_l %}
+            Société Générale Cameroun
+          {% elif 'yaounde' in brand_l or 'yaoundé' in brand_l or 'douala' in brand_l or 'université' in brand_l or 'university' in brand_l %}
+            Votre établissement
+          {% else %}
+            Vérification officielle
+          {% endif %}
+        </div>
+
+        <div class="vb-rule">
+          <div class="vb-icon">🚫</div>
+          <div>N'appelez <strong>jamais</strong> le numéro indiqué dans un message suspect.</div>
+        </div>
+
+        {% if 'mtn' in brand_l %}
+        <div class="vb-rule">
+          <div class="vb-icon">✅</div>
+          <div>Tapez <strong>*126#</strong> vous-même sur votre téléphone pour vérifier votre solde.</div>
+        </div>
+        <div class="vb-rule">
+          <div class="vb-icon">🌐</div>
+          <div>Site officiel : <a href="#">mtn.cm</a></div>
+        </div>
+        {% elif 'orange' in brand_l %}
+        <div class="vb-rule">
+          <div class="vb-icon">✅</div>
+          <div>Tapez <strong>*144#</strong> vous-même pour vérifier votre solde.</div>
+        </div>
+        <div class="vb-rule">
+          <div class="vb-icon">🌐</div>
+          <div>Site officiel : <a href="#">orange.cm</a></div>
+        </div>
+        {% elif 'afriland' in brand_l %}
+        <div class="vb-rule">
+          <div class="vb-icon">✅</div>
+          <div>Appelez le numéro <strong>au dos de votre carte Afriland</strong> ou rendez-vous en agence.</div>
+        </div>
+        <div class="vb-rule">
+          <div class="vb-icon">🌐</div>
+          <div>Site officiel : <a href="#">afrilandfirstbank.com</a></div>
+        </div>
+        {% elif 'uba' in brand_l %}
+        <div class="vb-rule">
+          <div class="vb-icon">✅</div>
+          <div>Appelez le numéro <strong>au dos de votre carte UBA</strong> ou rendez-vous en agence.</div>
+        </div>
+        <div class="vb-rule">
+          <div class="vb-icon">🌐</div>
+          <div>Site officiel : <a href="#">ubagroup.com/cm</a></div>
+        </div>
+        {% else %}
+        <div class="vb-rule">
+          <div class="vb-icon">✅</div>
+          <div>Appelez le numéro <strong>au dos de votre carte</strong> ou rendez-vous directement en agence.</div>
+        </div>
+        <div class="vb-rule">
+          <div class="vb-icon">🌐</div>
+          <div>Cherchez le site officiel vous-même sur Google — ne cliquez pas les liens reçus par message.</div>
+        </div>
+        {% endif %}
+
+        {% if scenario == 'mobile_money' %}
+        <div class="vb-rule" style="margin-top:6px; opacity:.75; font-style: italic;">
+          <div class="vb-icon">ℹ</div>
+          <div>Rappel : MTN et Orange n'envoient <strong>jamais</strong> de liens par SMS pour confirmer un paiement.</div>
+        </div>
+        {% elif scenario == 'banking' %}
+        <div class="vb-rule" style="margin-top:6px; opacity:.75; font-style: italic;">
+          <div class="vb-icon">ℹ</div>
+          <div>Rappel : votre banque ne vous demandera <strong>jamais</strong> votre mot de passe par email ou SMS.</div>
+        </div>
+        {% endif %}
+      </div>
+
+    {% else %}
+      {# ── LEGACY FALLBACK for old plain-text lessons ── #}
+      <div class="section-title"><div class="dot"></div>Ce qui vient de se passer</div>
+      <div class="legacy-lesson">{{ lesson }}</div>
+
+      <div class="section-title"><div class="dot"></div>3 réflexes à développer</div>
+      <div class="flags-grid">
+        <div class="flag-card">
+          <div class="flag-num">1</div>
+          <strong>Vérifiez l'expéditeur</strong>
+          <p>Les banques et opérateurs n'envoient jamais d'emails demandant votre PIN ou mot de passe.</p>
+        </div>
+        <div class="flag-card">
+          <div class="flag-num">2</div>
+          <strong>Méfiez-vous de l'urgence</strong>
+          <p>"Avant 24h", "compte suspendu", "dernière chance" — ce sont des signaux de manipulation.</p>
+        </div>
+        <div class="flag-card">
+          <div class="flag-num">3</div>
+          <strong>Tapez le code USSD vous-même</strong>
+          <p>*126# pour MTN, *144# pour Orange. Jamais via un lien reçu par message.</p>
+        </div>
+      </div>
+    {% endif %}
 
   </div>
 
+  <p class="footer-note">
+    Exercice de formation Hameçon — aucune donnée réelle n'a été collectée.
+  </p>
+
 </div>
-</body></html>
+</body>
+</html>

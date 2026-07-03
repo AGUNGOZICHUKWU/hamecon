@@ -6,6 +6,24 @@ from app.models.user import _conn
 
 track_bp = Blueprint("track", __name__, template_folder="../templates/track")
 
+@track_bp.route("/t/PREVIEW")
+def preview():
+    """Placeholder landing shown when an operator clicks a preview tracking link.
+
+    This route exists so previewing a campaign draft does not return a 404.
+    No click event is recorded, no consent is checked, and no real recipient
+    data is touched. It is a visual aid for the operator during review.
+    """
+    return (
+        "<html><body style='font-family:sans-serif;padding:2em;"
+        "background:#fdf7e3;color:#333;'>"
+        "<h2 style='color:#b8860b;'>Preview Link</h2>"
+        "<p>This is what a real recipient would land on when they click "
+        "the tracking link in a dispatched message.</p>"
+        "<p><strong>No click event is recorded in preview mode.</strong></p>"
+        "</body></html>",
+        200,
+    )
 
 @track_bp.route("/t/<token>")
 def click(token):
@@ -21,7 +39,7 @@ def click(token):
     template_map = {
         "mobile_money": "track/landing_momo.html",
         "banking":      "track/landing_bank.html",
-        "university":   "track/landing_university.html",
+
     }
     # Special: if from_name mentions Orange, use Orange template
     if camp and camp.from_name and "orange" in camp.from_name.lower():
@@ -72,8 +90,30 @@ def _get_or_create_lesson(msg):
 
 @track_bp.route("/learn/<token>")
 def learn(token):
+    import json as _json
     msg = SentMessage.get_by_token(token)
     if not msg:
         abort(404)
-    lesson = _get_or_create_lesson(msg)
-    return render_template("track/learn.html", lesson=lesson)
+    lesson_raw = _get_or_create_lesson(msg)
+
+    lesson_data = None
+    try:
+        lesson_data = _json.loads(lesson_raw)
+        # Validate expected shape
+        if not isinstance(lesson_data.get("red_flags"), list):
+            lesson_data = None
+    except Exception:
+        pass
+
+    from app.models.campaign import Campaign
+    camp = Campaign.get(msg.campaign_id)
+    scenario = camp.scenario if camp else "banking"
+    from_name = (camp.from_name or "") if camp else ""
+
+    return render_template(
+        "track/learn.html",
+        lesson=lesson_raw,
+        lesson_data=lesson_data,
+        scenario=scenario,
+        from_name=from_name,
+    )

@@ -15,7 +15,9 @@
   {% if m.subject %}<p><strong>Subject:</strong> {{ m.subject }}</p>{% endif %}
   <hr class="divider">
   {% if camp.channel == 'email' %}
-    <div>{{ m.body | safe }}</div>
+    <iframe srcdoc="{{ m.body | e }}"
+        style="width:100%; height:700px; border:1px solid #ddd; border-radius:8px; background:#fff;"
+        sandbox="allow-same-origin"></iframe>
   {% else %}
     <p style="font-family:monospace; background:#f0f0ec; padding:12px; border-radius:6px;">{{ m.body }}</p>
   {% endif %}

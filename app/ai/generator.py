@@ -58,6 +58,31 @@ PHONE NUMBER FORMAT (Cameroonian mobile):
 CURRENCY: Always FCFA (never Euros or USD). Realistic amounts: 1.000 to 250.000 FCFA range.
 """
 
+_BRAND_RULES = """
+STRICT BRAND-SCENARIO MAPPING — YOU MUST OBEY THIS:
+
+If scenario == "mobile_money":
+  - The impersonated brand MUST be ONE of: MTN Mobile Money, Orange Money.
+  - You may NOT use any bank name (UBA, Afriland, BICEC, Ecobank, Société Générale, etc.).
+  - Subject line and body must reference MoMo / Orange Money / USSD codes (*126# or *144#).
+  - Phone number format: 6XX XXX XXX (MTN: 67X/68X, Orange: 69X/65X).
+
+If scenario == "banking":
+  - The impersonated brand MUST be ONE of: Afriland First Bank, BICEC, UBA Cameroun, Ecobank, Société Générale Cameroun.
+  - You may NOT impersonate MTN, Orange, or any telecom.
+  - Use formal French banking tone, signed by "Service Client".
+
+If scenario == "university":
+  - The impersonated brand MUST be ONE of: Université de Yaoundé I, Université de Douala, Université de Buea, Université Catholique d'Afrique Centrale.
+  - You may NOT use telecom or bank brands.
+  - Use bureaucratic academic tone (mention matricule, dossier, scolarité).
+
+DOUBLE-CHECK BEFORE RESPONDING:
+- Does my subject line use a brand from the correct list for this scenario?
+- Does the body use the SAME brand throughout? (No mixing MTN and UBA in one email.)
+- Does the signature match the brand I chose?
+"""
+
 _DIFFICULTY_RULES = {
     "easy": (
         "OBVIOUS TYPOS in brand name (MNT instead of MTN). Generic greeting. "
@@ -102,7 +127,8 @@ def generate_phish_email(brief: str, language: str = "fr", difficulty: str = "me
         "consented security-awareness platform for Cameroon. NEVER include a real URL; "
         "use the literal placeholder {{TRACKING_LINK}} where a link should be. "
         "Output ONLY: first line 'Subject: <subject>', blank line, then HTML body.\n\n"
-        + _CAMEROON_CONTEXT
+        + _CAMEROON_CONTEXT 
+        +_BRAND_RULES
     )
     user = f"{_language_block(language)}\n{_difficulty_block(difficulty)}\nBRIEF: {brief}\n\nGenerate now."
     msg = _client.messages.create(
@@ -121,6 +147,7 @@ def generate_phish_sms(brief: str, language: str = "fr", difficulty: str = "medi
         "You generate REALISTIC simulated phishing SMS messages for Hameçon. Format: "
         "a single SMS under 160 characters. No greeting. Use {{TRACKING_LINK}} where a link "
         "should be. Output ONLY the SMS text, nothing else.\n\n" + _CAMEROON_CONTEXT
+        + _BRAND_RULES
     )
     user = f"{_language_block(language)}\n{_difficulty_block(difficulty)}\nBRIEF: {brief}\n\nGenerate now."
     msg = _client.messages.create(
@@ -131,30 +158,50 @@ def generate_phish_sms(brief: str, language: str = "fr", difficulty: str = "medi
 
 
 def generate_lesson(message_subject: str, message_body: str, channel: str = "email", language: str = "fr") -> str:
-    """Beginner-friendly teachable moment. Assumes the reader has NEVER heard the word 'phishing'."""
+    """
+    Beginner-friendly teachable moment.
+    Returns a JSON string: {brand, red_flags:[{title,detail}×3], tip}
+    Falls back to plain text if JSON parsing fails on the caller side.
+    """
+    lang_label = "French (Cameroon)" if language == "fr" else "English (Cameroon)"
     system = (
         "You are a warm Cameroonian security trainer. The reader just clicked a simulated "
-        "scam message as part of a consented training programme. They may have NEVER heard "
-        "the word 'phishing' or 'hameçonnage'. Explain in 4 short paragraphs IN THE SPECIFIED "
-        "LANGUAGE:\n"
-        "1. Reassure them: this was a test, nothing was stolen.\n"
-        "2. Define the scam in one sentence using a simple metaphor (a fake fisherman, a fake bank teller).\n"
-        "3. Point out the THREE specific clues in this exact message that should have warned them.\n"
-        "4. One concrete habit to protect themselves next time. Never mention PINs in a way that could be "
-        "harvested. Be warm. Never shame.\n"
+        "phishing message as part of a consented training programme. They may have NEVER "
+        "heard of phishing. Be warm, never shame.\n\n"
+        "Output ONLY a valid JSON object — no markdown fences, no extra text — with EXACTLY "
+        "these keys:\n"
+        '{\n'
+        '  "brand": "<name of the brand impersonated in the message>",\n'
+        '  "red_flags": [\n'
+        '    {"title": "<max 5 words>", "detail": "<1–2 sentences specific to this message>"},\n'
+        '    {"title": "<max 5 words>", "detail": "<1–2 sentences specific to this message>"},\n'
+        '    {"title": "<max 5 words>", "detail": "<1–2 sentences specific to this message>"}\n'
+        '  ],\n'
+        '  "tip": "<one concrete protective action, 1 sentence>"\n'
+        '}\n\n'
+        "Rules:\n"
+        "- red_flags MUST have EXACTLY 3 items.\n"
+        "- Each clue MUST reference something specific in the exact message provided.\n"
+        "- tip must be a single actionable sentence (e.g. 'Composez *126# vous-même...').\n"
+        "- Never instruct the reader to share their PIN.\n"
+        f"- ALL text values must be in {lang_label}.\n"
     )
     user = (
-        f"LANGUAGE: {'French (Cameroon)' if language == 'fr' else 'English (Cameroon)'}\n"
+        f"LANGUAGE: {lang_label}\n"
         f"CHANNEL: {channel}\n"
         f"SUBJECT (if email): {message_subject}\n"
         f"MESSAGE BODY:\n{message_body}\n\n"
-        "Write the teachable-moment lesson now."
+        "Output the JSON object now."
     )
     msg = _client.messages.create(
-        model=_MODEL, max_tokens=700, system=system,
+        model=_MODEL, max_tokens=800, system=system,
         messages=[{"role": "user", "content": user}],
     )
-    return msg.content[0].text.strip()
+    raw = msg.content[0].text.strip()
+    # Strip accidental markdown fences if Claude adds them
+    if raw.startswith("```"):
+        raw = re.sub(r"^```[a-z]*\n?", "", raw).rstrip("`").strip()
+    return raw
 
 
 # Backwards-compat shim so existing scripts keep working

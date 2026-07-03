@@ -1,6 +1,7 @@
 """Campaign routes: list, create (AI), review, approve, send, view messages."""
 
 import os
+import re
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.admin.routes import admin_bp, role_required
@@ -65,7 +66,24 @@ def campaigns_detail(campaign_id):
     if not camp:
         flash("Campaign not found.", "error")
         return redirect(url_for("admin.campaigns_list"))
-    return render_template("admin/campaigns/detail.html", camp=camp)
+
+    # Substitute a preview tracking URL so the operator sees the real link shape
+    base = os.environ.get("TRACKING_BASE_URL", "http://127.0.0.1:5000")
+    preview_url = f"{base}/t/PREVIEW"
+    preview_body = (camp.draft_body or "").replace("{{TRACKING_LINK}}", preview_url)
+
+    # Strip auto-navigation elements so the preview iframe does not jump away.
+    # This only affects what the operator sees. The saved draft is untouched.
+    preview_body = re.sub(
+        r'<meta[^>]*http-equiv=["\']?refresh["\']?[^>]*>',
+        '',
+        preview_body,
+        flags=re.IGNORECASE,
+    )
+
+    return render_template("admin/campaigns/detail.html",
+                           camp=camp,
+                           preview_body=preview_body)
 
 
 @admin_bp.route("/campaigns/<int:campaign_id>/approve", methods=["POST"])
