@@ -3,11 +3,14 @@
 from flask import Flask
 from flask_login import LoginManager
 from dotenv import load_dotenv
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import os
 
 load_dotenv()
 
 login_manager = LoginManager()
+limiter = Limiter(key_func=get_remote_address,  default_limits=["200 per hour"])
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "error"
 
@@ -21,6 +24,7 @@ def create_app() -> Flask:
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     login_manager.init_app(app)
+    limiter.init_app(app)
 
     from app.models.user import User
     @login_manager.user_loader
