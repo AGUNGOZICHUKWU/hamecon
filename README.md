@@ -1,135 +1,69 @@
 # Hameçon
 
-**AI-powered phishing-awareness training for under-served markets.**
+**AI-native, consent-driven phishing awareness training for African small and medium enterprises.**
 
-Demonstrated and validated in the Cameroonian context. Built to be affordable, local>
+Hameçon is a Master's research project turned deployable platform that delivers phishing simulation training to Cameroonian and West African SMEs at one-thirteenth the cost of commercial alternatives.
 
----
-## The problem
+## Highlights
 
-Phishing is the number-one intial-access attack vector in modern breaches. The globa>
-
-Open-source alternatives like Gophish are free but ship generic American and Europea>
-
-The result: the people most vulnerable to phishing are the ones with the fewest tool>
-
----
-
-## The solution
-
-
-Hameçon is a self-hosted phishing-awareness platform that:
-
-- Generates fresh, AI-written phishing emailson demand using Anthropic Claude
-- Speaks French and English fluently, with Cameroonian cultural context built in
-- Delivers a personalised teachable moment the instant a user clicks
-- Tracks per-user vulnerability and adapts difficulty over time
-- Runs on a US$35 Raspberry pi for under US$20 per month of operating cost
-- Operates on consent-first principles - no recipient is ever sent a simulated phish>
-
-It is designed as the open-source phishing-awareness platform a small Cameroonian or>
-
----
+- All 8 applicable OWASP Top 10 (2021) categories pass
+- AI content generation via Anthropic Claude Sonnet 4.5, 4.7 to 5.2 seconds mean latency
+- 100 percent consent gate enforcement in automated tests
+- Runs on a single Raspberry Pi 3B+
+- Annual operating cost: 83,000 FCFA for a 50-person SME
+- Bilingual: French and English
+- Aligned with Cameroon's Law No. 2010/012 on Cybersecurity and Cybercriminality
 
 ## Architecture
-                    Admin Dashboard
-                    (Flask + Jinja2)
-                          |
-                          v
-                 Anthropic Claude API
-        (generates emails + teachable lessons)
-                          |
-                          v
-                     Mailgun API
-        (dispatches emails with tracking tokens)
-                          |
-                  user clicks the link
-                          v
-                  Fake landing page
-        (records click + submit attempt; no creds stored)
-                          |
-                          v
-              Teachable Moment Page
-        (Claude personalises the lesson)
-                          |
-                          v
-                  SQLite Database
-        (users, consent, campaigns, events, audit_log)
 
----
+Three-tier Flask application running end-to-end on a Raspberry Pi behind a Cloudflare Tunnel:
 
-## Five differentiators
+- **Presentation:** Jinja templates for operator console, landing pages, teachable moment
+- **Application:** Flask + Gunicorn, campaign dispatcher, AI generator, tracking, authentication
+- **Data:** SQLite with append-only audit log
 
-1. **AI-generated content** - every campaign is freshly written, so no two recipients see identical text. Static template libraries go stale; AI keeps content fresh.
-2. **Personalised teachable moment** - the lesson is generated for the user, in their language, based on exactly what tricked them.
-3. **Adaptive difficulty** - Hameçon learns each user's blind spots and increases challenge over time.
-4. **Security-first end-to-end** - UFW, Fail2Ban, key-only SSH, TLS, bcrypt, RBAC, audit log, written consent workflow.
-5. **Open-source and affordable** - runs on a Raspberry Pi for under US$20 per month of total operating cost.
+## Consent-Driven Dispatch (Five Gates)
 
----
+Consent check → AI generation → Operator review → Signed token → SMTP send
 
-## Five non-negotiable security rules
+Break any gate and no message leaves the platform. Every action is recorded in the audit log.
 
-These are applied from Day 1. Any future change must respect them:
+## Tech Stack
 
-1. No recipient is sent a simulated phish without a timestamped, written consent record in the database.
-2. Submitted credentials are never stored. Only the fact that a submit happened (and the input length) is recorded.
-3. The admin dashboards requires authentication. No public access. Bcrypt, RBAC, session timeout, login rate limiting.
-4. All admin actions are written to an immutable audit log.
-5. Fake landing pages live on a clearly identified subdomain under our control. We imitiate brands; we never register lookalike domains.
+- Python 3.11, Flask 3.0, SQLite, Jinja2, bcrypt
+- Anthropic Claude Sonnet 4.5 for AI content
+- Flask-Login, Flask-WTF, Flask-Limiter for security
+- Nginx, Cloudflare Tunnel, Gmail SMTP, Systemd, Gunicorn
 
----
+## Two Production Scenarios
 
-## In scope for v1.0 (20-day build)
+- **Mobile money:** MTN Mobile Money and Orange Money impersonation
+- **Banking:** Impersonation of the five main Cameroonian banks (Afriland First Bank, UBA Cameroun, BICEC, Ecobank, Société Générale Cameroun)
 
-- Bilingual (FR + EN) AI-generated phishing emails
-- Three core phishing scenarios: mobile money, banking, university portal
-- Consent-first recipient management 
-- Click and submit tracking  (no credential storage)
-- AI-personalised teachable moment
-- Adaptive difficulty (basic implementation)
-- Admin dashboard with metrics and audit log viewer
-- Hardened production deployment (Nginx + TLS + UFW + Fail2Ban)
+## Security Rules
 
+Five non-negotiable rules applied from Day 1 and enforced at both the code and database level:
 
-## Deferred to v2
+1. No recipient receives a simulated phish without a timestamped, written consent record
+2. Submitted credentials are NEVER stored, only integer lengths are recorded
+3. The admin console requires authentication with bcrypt, rate limiting, and role-based access control
+4. All operator actions are written to an append-only audit log
+5. Landing pages live on a clearly identified subdomain, no lookalike domain registration
 
-- Multi-organisation tenancy
-- Mobile (SMS / Whatsapp)  simulated phishing
-- LMS and HR-system intergrations
-- Advanced gamification and leaderboards
-- a native mobile app
+## Research Context
 
----
+Master's thesis defended at the College of Technology (COLTECH), University of Bamenda, Cameroon, in August 2026, with an Excellent mark.
 
-## Technology stack
+## Product Page
 
-- Hardware: Raspberry pi 3B+
-- OS: Debian Trixie (64-bit) 
-- Backend: Python 3.13 with flask
-- Database: SQLite
-- AI: Anthropic Claude
-- Email: Mailgun (free tier)
-- Web server: Gunicorn behind Nginx
-- Authentication: bcrypt with Flask-login
-
----
-
-## Current status
-
-Day 1 of 20 - pivoted from a URL-detector concept (PhishGuard) to the AI-driven awareness platform (Hameçon).
-
----
+Hameçon on Notion: https://peat-pudding-ffd.notion.site/Hame-on-3c67fb05145180649b78e5e680e32f13
 
 ## Author
 
-Florencia AGUNGOZICHUKWU - Master's project in Cybersecurity Defence.
+Ngozichukwu Florencia Agu
+laflam984@gmail.com
+Cameroon
 
----
+## Licence
 
-## License and ethics
-
-Source code: MIT (to be finalised).
-
-**Ethical use:** Hameçon is a training tool. Using it to send simulated phishing to recipients without their written, informed consent is unethical and may be illegal in your jurisdiction. The codebase enforces a hard consent gate. Do not bypass it.
-
+Currently proprietary. Contact the author for research or partnership use.
